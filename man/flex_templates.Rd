@@ -21,6 +21,7 @@ This includes the following information:
   \item whether any variables are displayed as deltas in comparison to a baseline rather than as raw values.
   \item intra- and/or inter-annual time period information if applicable.
   \item whether Shiny is used at runtime to launch a local instance of an interactive flexdashboard rather than a standalone html document.
+  \item whether the template requires any additional parameters specified by the user.
 }
 }
 \examples{

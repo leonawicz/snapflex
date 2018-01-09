@@ -4,16 +4,17 @@
 \alias{flex}
 \title{Generate flexdashboards for SNAP data sets}
 \usage{
-flex(template, out_dir = ".", params = NULL, load_static = TRUE)
+flex(template, out_dir = getwd(), template_params = NULL,
+  load_static = FALSE)
 }
 \arguments{
 \item{template}{character, the ID of the flexdashboard template. See \code{\link{flex_templates}} for available IDs and descriptions.}
 
 \item{out_dir}{character, output directory for standalone html document when \code{template} refers to a static (non-Shiny) flexdashboard.}
 
-\item{params}{named list, additional parameters passed to the template if required. See \code{\link{flex_params}} for more information.}
+\item{template_params}{named list, additional parameters passed to the template if required. See \code{\link{flex_args}} for more information.}
 
-\item{load_static}{logical, load static files automatically.}
+\item{load_static}{logical, load static files automatically. See details.}
 }
 \description{
 Generate local flexdashboards for SNAP data sets from package templates.
@@ -21,13 +22,12 @@ Generate local flexdashboards for SNAP data sets from package templates.
 \details{
 This function creates a flexdashboard from an existing template provided by the package.
 If a given template requires custom arguments to be provided, for example a location name,
-these arguments can be passed as a named list to \code{params}.
+these arguments can be passed as a named list to \code{template_params}.
 
 Some templates produce static documents. Others use Shiny at runtime.
-By default, templates of the former type launch automatically in the default browser when generated.
-Similarly, the latter type automatically launches a local instance of a flexdashboard with Shiny backend support for additional interactivity.
-The static document templates also save the resulting standalone html document to \code{out_dir}, defaulting to the working directory.
-In this case, \code{load_static = FALSE} will toggle off the automatic launch for static flexdashboards.
+Flexdashboards with Shiny backend support automatically launch a local instance in the default web browser.
+By contrast, the static document templates save the resulting standalone html document to \code{out_dir}, defaulting to the working directory.
+In this case, \code{load_static = TRUE} will toggle on the Shiny-like automatic launch for static flexdashboards. This is off by default.
 
 Note that static does not mean the flexdashboard html document offers no interactivity.
 A template may still offer the ability to switch between different graphs and tables and explore different content.
@@ -36,7 +36,7 @@ but it also means that more complex static templates result in larger output fil
 complexity of a flexdashboard that uses Shiny.
 }
 \examples{
-\dontrun{flex("psc1", params = list(location = "Fairbanks"))}
+\dontrun{flex("psc1", template_params = list(location = "Fairbanks"))}
 }
 \seealso{
 flex_templates flex_params
