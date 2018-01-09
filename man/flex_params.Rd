@@ -7,7 +7,7 @@
 flex_params(template)
 }
 \arguments{
-\item{template}{}
+\item{template}{character, the flexdashboard template. See \code{\link{flex_templates}}.}
 }
 \value{
 a character vector or \code{NULL}

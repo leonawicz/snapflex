@@ -12,7 +12,7 @@ flex(template, out_dir = getwd(), template_params = NULL,
 
 \item{out_dir}{character, output directory for standalone html document when \code{template} refers to a static (non-Shiny) flexdashboard.}
 
-\item{template_params}{named list, additional parameters passed to the template if required. See \code{\link{flex_args}} for more information.}
+\item{template_params}{named list, additional parameters passed to the template if required. See \code{\link{flex_params}} for more information.}
 
 \item{load_static}{logical, load static files automatically. See details.}
 }
