@@ -33,13 +33,14 @@ NULL
 #' @param template character, the ID of the flexdashboard template. See \code{\link{flex_templates}} for available IDs and descriptions.
 #' @param out_dir character, output directory for standalone html document when \code{template} refers to a static (non-Shiny) flexdashboard.
 #' @param params named list, additional parameters passed to the template if required. See \code{\link{flex_params}} for more information.
+#' @param load_static logical, load static files automatically.
 #'
 #' @export
 #'
 #' @seealso flex_templates flex_params
 #' @examples
 #' \dontrun{flex("psc1", params = list(location = "Fairbanks"))}
-flex <- function(template, out_dir = ".", params = NULL){
+flex <- function(template, out_dir = ".", params = NULL, load_static = TRUE){
   path <- system.file("flex", package = "snapflex")
   path <- switch(template, "psc1" = file.path(path, "flex-clim-1.Rmd"))
   if(template %in% c("psc1")){
@@ -86,7 +87,7 @@ flex_templates <- function(){
 #'
 #' @param template
 #'
-#' @return
+#' @return a character vector or \code{NULL}
 #' @export
 #'
 #' @seealso flex_templates flex
