@@ -217,6 +217,7 @@ This includes the following information:</p>
 <li><p>whether any variables are displayed as deltas in comparison to a baseline rather than as raw values.</p></li>
 <li><p>intra- and/or inter-annual time period information if applicable.</p></li>
 <li><p>whether Shiny is used at runtime to launch a local instance of an interactive flexdashboard rather than a standalone html document.</p></li>
+<li><p>whether the template requires any additional parameters specified by the user.</p></li>
 </ul>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
@@ -225,10 +226,10 @@ This includes the following information:</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>flex_templates</span>()</div><div class='output co'>#&gt; # A tibble: 1 x 6
-#&gt;   id    description                  variable          delt~ period       shiny
-#&gt;   &lt;chr&gt; &lt;chr&gt;                        &lt;chr&gt;             &lt;lgl&gt; &lt;chr&gt;        &lt;lgl&gt;
-#&gt; 1 psc1  projected seasonal climate:~ temperature and ~ T     seasonal, p~ F    </div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>flex_templates</span>()</div><div class='output co'>#&gt; # A tibble: 1 x 7
+#&gt;   id    description              variable         delt~ period      shiny para~
+#&gt;   &lt;chr&gt; &lt;chr&gt;                    &lt;chr&gt;            &lt;lgl&gt; &lt;chr&gt;       &lt;lgl&gt; &lt;lgl&gt;
+#&gt; 1 psc1  projected seasonal clim~ temperature and~ T     seasonal, ~ F     T    </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
