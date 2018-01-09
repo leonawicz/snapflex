@@ -16,13 +16,12 @@ NULL
 #'
 #' This function creates a flexdashboard from an existing template provided by the package.
 #' If a given template requires custom arguments to be provided, for example a location name,
-#' these arguments can be passed as a named list to \code{params}.
+#' these arguments can be passed as a named list to \code{template_params}.
 #'
 #' Some templates produce static documents. Others use Shiny at runtime.
-#' By default, templates of the former type launch automatically in the default browser when generated.
-#' Similarly, the latter type automatically launches a local instance of a flexdashboard with Shiny backend support for additional interactivity.
-#' The static document templates also save the resulting standalone html document to \code{out_dir}, defaulting to the working directory.
-#' In this case, \code{load_static = FALSE} will toggle off the automatic launch for static flexdashboards.
+#' Flexdashboards with Shiny backend support automatically launch a local instance in the default web browser.
+#' By contrast, the static document templates save the resulting standalone html document to \code{out_dir}, defaulting to the working directory.
+#' In this case, \code{load_static = TRUE} will toggle on the Shiny-like automatic launch for static flexdashboards. This is off by default.
 #'
 #' Note that static does not mean the flexdashboard html document offers no interactivity.
 #' A template may still offer the ability to switch between different graphs and tables and explore different content.
@@ -32,25 +31,46 @@ NULL
 #'
 #' @param template character, the ID of the flexdashboard template. See \code{\link{flex_templates}} for available IDs and descriptions.
 #' @param out_dir character, output directory for standalone html document when \code{template} refers to a static (non-Shiny) flexdashboard.
-#' @param params named list, additional parameters passed to the template if required. See \code{\link{flex_params}} for more information.
-#' @param load_static logical, load static files automatically.
+#' @param template_params named list, additional parameters passed to the template if required. See \code{\link{flex_args}} for more information.
+#' @param load_static logical, load static files automatically. See details.
 #'
 #' @export
 #'
 #' @seealso flex_templates flex_params
 #' @examples
-#' \dontrun{flex("psc1", params = list(location = "Fairbanks"))}
-flex <- function(template, out_dir = ".", params = NULL, load_static = TRUE){
+#' \dontrun{flex("psc1", template_params = list(location = "Fairbanks"))}
+flex <- function(template, out_dir = getwd(), template_params = NULL, load_static = FALSE){
   path <- system.file("flex", package = "snapflex")
   path <- switch(template, "psc1" = file.path(path, "flex-clim-1.Rmd"))
-  if(template %in% c("psc1")){
-    no_loc <- "This template requires a point `location`, e.g., 'Anchorage'. See snaplocs::locs for options."
-    if(!is.list(params) || !location %in% names(params)) stop(no_loc)
-    rmarkdown::render(path, output_file = paste0(template, ".html"),
-                      output_dir = out_dir, params = params, quiet = TRUE)
+  use_shiny <- dplyr::filter(flex_templates(), .data[["id"]] == template)$shiny
+  if(!use_shiny) file <- paste0(template, ".html")
+  params_required <- dplyr::filter(flex_templates(), .data[["id"]] == template)$params
+  if(params_required) required_params <- strsplit(flex_params(template), ",")[[1]]
+  cat("Genrating flexdashboard...\n")
+  if(params_required){
+    missing_params <- "Additional parameters required. See `flex_params`."
+    location <- template_params$location
+    if(!is.list(template_params) || any(!required_params %in% names(template_params)))
+      stop(missing_params)
+    suppressMessages(
+      if(use_shiny){
+        rmarkdown::run(path, render_args = template_params)
+      } else {
+        rmarkdown::render(path, output_file = file, output_dir = out_dir,
+                          params = template_params, quiet = TRUE)
+      }
+    )
   } else {
-    rmarkdown::render(path, quiet = TRUE)
+    suppressMessages(
+      if(use_shiny){
+        rmarkdown::run(path)
+      } else {
+        rmarkdown::render(path, output_file = file, output_dir = out_dir, quiet = TRUE)
+      }
+    )
   }
+  cat("Dashboard complete.\n")
+  if(!use_shiny && load_static) browseURL(paste0('file://', file.path(out_dir, file)))
 }
 
 #' Basic metadata for all flexdashboard templates in snapflex
@@ -65,6 +85,7 @@ flex <- function(template, out_dir = ".", params = NULL, load_static = TRUE){
 #'   \item whether any variables are displayed as deltas in comparison to a baseline rather than as raw values.
 #'   \item intra- and/or inter-annual time period information if applicable.
 #'   \item whether Shiny is used at runtime to launch a local instance of an interactive flexdashboard rather than a standalone html document.
+#'   \item whether the template requires any additional parameters specified by the user.
 #' }
 #'
 #' @return a data frame.
@@ -76,7 +97,7 @@ flex <- function(template, out_dir = ".", params = NULL, load_static = TRUE){
 flex_templates <- function(){
   tibble::data_frame(id = "psc1", description = "projected seasonal climate: single point location",
                      variable = "temperature and precipitation", deltas = TRUE, period = "seasonal, projected",
-                     shiny = FALSE)
+                     shiny = FALSE, params = TRUE)
 }
 
 #' List the required parameters for a flexdashboard template
