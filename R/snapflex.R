@@ -1,3 +1,5 @@
+globalVariables(".data")
+
 #' snapflex: flexdashboards for SNAP data sets.
 #'
 #' Provides functions and templates for generating local flexdashboards showcasing and summarizing SNAP data sets as well as functions for accessing existing popular SNAP flexdashboards hosted online.
@@ -31,7 +33,7 @@ NULL
 #'
 #' @param template character, the ID of the flexdashboard template. See \code{\link{flex_templates}} for available IDs and descriptions.
 #' @param out_dir character, output directory for standalone html document when \code{template} refers to a static (non-Shiny) flexdashboard.
-#' @param template_params named list, additional parameters passed to the template if required. See \code{\link{flex_args}} for more information.
+#' @param template_params named list, additional parameters passed to the template if required. See \code{\link{flex_params}} for more information.
 #' @param load_static logical, load static files automatically. See details.
 #'
 #' @export
@@ -49,7 +51,6 @@ flex <- function(template, out_dir = getwd(), template_params = NULL, load_stati
   cat("Genrating flexdashboard...\n")
   if(params_required){
     missing_params <- "Additional parameters required. See `flex_params`."
-    location <- template_params$location
     if(!is.list(template_params) || any(!required_params %in% names(template_params)))
       stop(missing_params)
     suppressMessages(
@@ -70,7 +71,7 @@ flex <- function(template, out_dir = getwd(), template_params = NULL, load_stati
     )
   }
   cat("Dashboard complete.\n")
-  if(!use_shiny && load_static) browseURL(paste0('file://', file.path(out_dir, file)))
+  if(!use_shiny && load_static) browseURL(paste0("file://", file.path(out_dir, file)))
 }
 
 #' Basic metadata for all flexdashboard templates in snapflex
@@ -106,7 +107,7 @@ flex_templates <- function(){
 #'
 #' If this function returns \code{NULL} for a given template, then no parameters are required to be passed in a named list when calling \code{flex}.
 #'
-#' @param template
+#' @param template character, the flexdashboard template. See \code{\link{flex_templates}}.
 #'
 #' @return a character vector or \code{NULL}
 #' @export
