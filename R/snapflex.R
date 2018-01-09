@@ -71,7 +71,7 @@ flex <- function(template, out_dir = getwd(), template_params = NULL, load_stati
     )
   }
   cat("Dashboard complete.\n")
-  if(!use_shiny && load_static) browseURL(paste0("file://", file.path(out_dir, file)))
+  if(!use_shiny && load_static) utils::browseURL(paste0("file://", file.path(out_dir, file)))
 }
 
 #' Basic metadata for all flexdashboard templates in snapflex
