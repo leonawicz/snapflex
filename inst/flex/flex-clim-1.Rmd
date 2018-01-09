@@ -5,7 +5,7 @@ output:
     orientation: rows
     css: flex.css
 params:
-   loc: NA
+   location: NA
 ---
 
 ```{r knitr_setup, include=FALSE}
