@@ -18,7 +18,7 @@ List the required parameters for a flexdashboard template that must be passed to
 \details{
 If this function returns \code{NULL} for a given template, then no parameters are required to be passed in a named list when calling \code{flex}.
 Otherwise a length-2 list is returned. The first list element contains the vector of required parameters.
-The second element contains information regarding what consititutes valid values for the paramters if you are less familiar with the SNAPverse and SNAP climate data sets.
+The second element contains information regarding what constitutes valid values for the parameters if you are less familiar with the SNAPverse and SNAP climate data sets.
 }
 \examples{
 flex_params("psc1")
