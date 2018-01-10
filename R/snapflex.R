@@ -47,31 +47,32 @@ flex <- function(template, out_dir = getwd(), template_params = NULL, load_stati
   use_shiny <- dplyr::filter(flex_templates(), .data[["id"]] == template)$shiny
   if(!use_shiny) file <- paste0(template, ".html")
   params_required <- dplyr::filter(flex_templates(), .data[["id"]] == template)$params
-  if(params_required) required_params <- strsplit(flex_params(template), ",")[[1]]
+  if(params_required) required_params <- strsplit(flex_params(template)$parameters, ",")[[1]]
   cat("Genrating flexdashboard...\n")
   if(params_required){
     missing_params <- "Additional parameters required. See `flex_params`."
     if(!is.list(template_params) || any(!required_params %in% names(template_params)))
       stop(missing_params)
-    suppressMessages(
+    suppressWarnings(suppressMessages(
       if(use_shiny){
         rmarkdown::run(path, render_args = template_params)
       } else {
         rmarkdown::render(path, output_file = file, output_dir = out_dir,
                           params = template_params, quiet = TRUE)
       }
-    )
+    ))
   } else {
-    suppressMessages(
+    suppressWarnings(suppressMessages(
       if(use_shiny){
         rmarkdown::run(path)
       } else {
         rmarkdown::render(path, output_file = file, output_dir = out_dir, quiet = TRUE)
       }
-    )
+    ))
   }
   cat("Dashboard complete.\n")
   if(!use_shiny && load_static) utils::browseURL(paste0("file://", file.path(out_dir, file)))
+  invisible()
 }
 
 #' Basic metadata for all flexdashboard templates in snapflex
@@ -106,15 +107,17 @@ flex_templates <- function(){
 #' List the required parameters for a flexdashboard template that must be passed to \code{flex}.
 #'
 #' If this function returns \code{NULL} for a given template, then no parameters are required to be passed in a named list when calling \code{flex}.
+#' Otherwise a length-2 list is returned. The first list element contains the vector of required parameters.
+#' The second element contains information regarding what consititutes valid values for the paramters if you are less familiar with the SNAPverse and SNAP climate data sets.
 #'
 #' @param template character, the flexdashboard template. See \code{\link{flex_templates}}.
 #'
-#' @return a character vector or \code{NULL}
+#' @return a list or \code{NULL}.
 #' @export
 #'
 #' @seealso flex_templates flex
 #' @examples
 #' flex_params("psc1")
 flex_params <- function(template){
-  switch(template, "psc1" = "location")
+  switch(template, "psc1" = list(parameters = "location", hint = "See snaplocs::locs for valid point location names."))
 }
