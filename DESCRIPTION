@@ -20,6 +20,8 @@ Imports:
     knitr,
     rmarkdown,
     magrittr,
+    flexdashboard,
+    Cairo,
     ggplot2,
     dplyr,
     tibble,

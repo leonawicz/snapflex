@@ -3,6 +3,7 @@
 * Added vignette content.
 * Updated other documentation.
 * Added unit tests.
+* Minor tweaks to template.
 * Changed `flex_params` to return a list containing required paramters plus information regarding valid paramter values for those unfamiliar with SNAP data sets.
 * Minor function updates.
 
