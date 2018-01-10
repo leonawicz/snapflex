@@ -12,7 +12,7 @@ library(snapclim)
 reg <- snaplocs::get_province(loc)
 
 clrs1 <- snapplot::snapalettes(1)[c(1, 2, 4, 8)]
-gg_ts <- function(x, variable, title, subtitle, col, base_size = 20, base_family = "lato"){
+gg_ts <- function(x, variable, title, subtitle, col, base_size = 28, base_family = "lato"){
   ggplot(filter(x, Var == variable), aes(Year, Mean, colour = Season, fill = Season)) +
     geom_line(size = 1, alpha = 0.5) + geom_point(size = 2) +
     geom_point(colour = "white", pch = 21, size = 2) + geom_smooth(method = "lm", se = FALSE) +
