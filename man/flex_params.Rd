@@ -10,13 +10,15 @@ flex_params(template)
 \item{template}{character, the flexdashboard template. See \code{\link{flex_templates}}.}
 }
 \value{
-a character vector or \code{NULL}
+a list or \code{NULL}.
 }
 \description{
 List the required parameters for a flexdashboard template that must be passed to \code{flex}.
 }
 \details{
 If this function returns \code{NULL} for a given template, then no parameters are required to be passed in a named list when calling \code{flex}.
+Otherwise a length-2 list is returned. The first list element contains the vector of required parameters.
+The second element contains information regarding what consititutes valid values for the paramters if you are less familiar with the SNAPverse and SNAP climate data sets.
 }
 \examples{
 flex_params("psc1")
