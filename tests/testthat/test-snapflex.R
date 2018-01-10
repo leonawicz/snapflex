@@ -16,3 +16,5 @@ test_that("flex returns as expected", {
   expect_is(flex("psc1", template_params = list(location = "Fairbanks")), "NULL")
   expect_error(flex("psc1"), "Additional parameters required. See `flex_params`.")
 })
+
+unlink("psc1.html")
