@@ -63,7 +63,7 @@ flex(template = "psc1", template_params = pars)
 
 This will create a flexdashboard using `rmarkdown` and save it to `out_dir`. Click the image to view the flexdashboard result.
 
-<a href="https://leonawicz.github.io/snapflex/docs/articles/psc1.html"><p style="text-align:center;"><img src="https://github.com/leonawicz/DataVisExamples/blob/master/packages/snapflex.jpg?raw=true"></a></p><br>
+<a href="https://leonawicz.github.io/snapflex/articles/psc1.html"><p style="text-align:center;"><img src="https://github.com/leonawicz/DataVisExamples/blob/master/packages/snapflex.jpg?raw=true"></a></p><br>
 
 Some templates use Shiny runtime and launch in your web browser as an app. For these templates, there is no static HTML document saved to `out_dir`.
 
