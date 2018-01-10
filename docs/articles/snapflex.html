@@ -176,11 +176,77 @@
     
     
 <div class="contents">
+<p><code>snapflex</code> provides functions and templates for generating local flexdashboards showcasing and summarizing SNAP data sets as well as functions for accessing existing popular SNAP flexdashboards hosted online.</p>
+<div id="available-templates" class="section level2">
+<h2 class="hasAnchor">
+<a href="#available-templates" class="anchor"></a>Available templates</h2>
+<p>Before creating flexdashboards for SNAP climate data, it is necessary to know what flexdashboard templates are available. This can be done with <code>flex_templates</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(snapflex)
+<span class="kw"><a href="../reference/flex_templates.html">flex_templates</a></span>()
+<span class="co">#&gt; # A tibble: 1 x 7</span>
+<span class="co">#&gt;   id    description            variable       delt~ period     shiny para~</span>
+<span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;                  &lt;chr&gt;          &lt;lgl&gt; &lt;chr&gt;      &lt;lgl&gt; &lt;lgl&gt;</span>
+<span class="co">#&gt; 1 psc1  projected seasonal cl~ temperature a~ T     seasonal,~ F     T</span></code></pre></div>
+<p><em>The package is in early development so the list is scant at the moment.</em></p>
+<p>The table displays useful information about each template:</p>
+<ul>
+<li>the template ID used for generating a local flexdashboard.</li>
+<li>a brief description of the template.</li>
+<li>the variables included in the flexdashboard.</li>
+<li>whether any variables are displayed as deltas in comparison to a baseline rather than as raw values.</li>
+<li>intra- and/or inter-annual time period information if applicable.</li>
+<li>whether Shiny is used at runtime to launch a local instance of an interactive flexdashboard rather than a standalone html document.</li>
+<li>whether the template requires any additional parameters specified by the user.</li>
+</ul>
+</div>
+<div id="user-specifications" class="section level2">
+<h2 class="hasAnchor">
+<a href="#user-specifications" class="anchor"></a>User specifications</h2>
+<p>Regarding the last item on the above list, some templates allow for limited user customization. For example, a flexdashboard template for climate trends at a point location may require the user to provide a specific location from a list of available options so that the template can be used for more than a single, hard-coded location. The row in <code><a href="../reference/flex_templates.html">flex_templates()</a></code> pertaining to the <code>psc1</code> template for projected seasonal climate at a point location shows <code>TRUE</code> under the <code>params</code> column. This means that this template requires user-specified parameters. Use <code>flex_params</code> with the template ID to see what is required.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/flex_params.html">flex_params</a></span>(<span class="dt">template =</span> <span class="st">"psc1"</span>)
+<span class="co">#&gt; $parameters</span>
+<span class="co">#&gt; [1] "location"</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $hint</span>
+<span class="co">#&gt; [1] "See snaplocs::locs for valid point location names."</span></code></pre></div>
+<p><code>flex_params</code> returns a list of two elements. The first is a vector of parameter names. In this case there is only one: location. Having this information makes it possible to now use this template with <code>flex</code>, which would return an error if any required parameter is not provided. The second is a character string hint providing some context or description of what is considered a valid value for each parameter.</p>
+</div>
+<div id="creating-flexdashboards" class="section level2">
+<h2 class="hasAnchor">
+<a href="#creating-flexdashboards" class="anchor"></a>Creating flexdashboards</h2>
+<p>The central function in <code>snapflex</code> that creates and populates flexdashboards from templates and SNAP climate data sets is <code>flex</code>. Specify <code>out_dir</code> in <code>flex</code> if you want to save flexdashboards somewhere other than your working directory.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pars &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">location =</span> <span class="st">"Anchorage"</span>)
+<span class="kw"><a href="../reference/flex.html">flex</a></span>(<span class="dt">template =</span> <span class="st">"psc1"</span>, <span class="dt">template_params =</span> pars)
+<span class="co">#&gt; Genrating flexdashboard...</span>
+<span class="co">#&gt; Dashboard complete.</span></code></pre></div>
+<p>This will create a flexdashboard using <code>rmarkdown</code> and save it to <code>out_dir</code>. Click the image to view the flexdashboard result.</p>
+<a href="https://leonawicz.github.io/snapflex/docs/articles/psc1.html">
+<p style="text-align:center;">
+<img src="https://github.com/leonawicz/DataVisExamples/blob/master/packages/snapflex.jpg?raw=true"></p></a>
 
+<p><br></p>
+<p>Some templates use Shiny runtime and launch in your web browser as an app. For these templates, there is no static HTML document saved to <code>out_dir</code>.</p>
+<p>Remember that <code>snapflex</code> is part of the <a href="https://leonawicz.github.io/snapverse/">SNAPverse</a>. It is for showcasing SNAP data sets. If using <code>snapflex</code> it is important to have a more general familiarity with the SNAPverse. Specifically, it is important in the example above to know that available point locations associated with SNAP climate data are part of the <code>snaplocs</code> package. <code>flex_params</code> provides this hint, but generally speaking, success using SNAPverse packages correlates with the level of familiarity you have with the verse and the SNAP data sets it wraps around.</p>
+</div>
+<div id="development-status" class="section level2">
+<h2 class="hasAnchor">
+<a href="#development-status" class="anchor"></a>Development status</h2>
+<p>Future updates to <code>snapflex</code> will include an expanded array of SNAP flexdashboard templates.</p>
+</div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+        <div id="tocnav">
+      <h2 class="hasAnchor">
+<a href="#tocnav" class="anchor"></a>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+<li><a href="#available-templates">Available templates</a></li>
+      <li><a href="#user-specifications">User specifications</a></li>
+      <li><a href="#creating-flexdashboards">Creating flexdashboards</a></li>
+      <li><a href="#development-status">Development status</a></li>
+      </ul>
+</div>
       </div>
 
 </div>
