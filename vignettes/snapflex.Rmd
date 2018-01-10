@@ -15,8 +15,6 @@ knitr::opts_chunk$set(
 
 `snapflex` provides functions and templates for generating local flexdashboards showcasing and summarizing SNAP data sets as well as functions for accessing existing popular SNAP flexdashboards hosted online.
 
-<p style="text-align:center;"><img src="https://github.com/leonawicz/DataVisExamples/blob/master/packages/snapflex.jpg?raw=true"></p><br>
-
 ## Available templates
 
 Before creating flexdashboards for SNAP climate data, it is necessary to know what flexdashboard templates are available. This can be done with `flex_templates`.
@@ -63,7 +61,11 @@ pars <- list(location = "Anchorage")
 flex(template = "psc1", template_params = pars)
 ```
 
-This will create a flexdashboard using `rmarkdown` and save it to `out_dir`. Some templates use Shiny runtime and launch in your web browser as an app. For these templates, there is no static HTML document saved to `out_dir`.
+This will create a flexdashboard using `rmarkdown` and save it to `out_dir`. Click the image to view the flexdashboard result.
+
+<a href="https://leonawicz.github.io/snapflex/docs/articles/psc1.html"><p style="text-align:center;"><img src="https://github.com/leonawicz/DataVisExamples/blob/master/packages/snapflex.jpg?raw=true"></a></p><br>
+
+Some templates use Shiny runtime and launch in your web browser as an app. For these templates, there is no static HTML document saved to `out_dir`.
 
 Remember that `snapflex` is part of the [SNAPverse](https://leonawicz.github.io/snapverse/). It is for showcasing SNAP data sets. If using `snapflex` it is important to have a more general familiarity with the SNAPverse. Specifically, it is important in the example above to know that available point locations associated with SNAP climate data are part of the `snaplocs` package. `flex_params` provides this hint, but generally speaking, success using SNAPverse packages correlates with the level of familiarity you have with the verse and the SNAP data sets it wraps around.
 
