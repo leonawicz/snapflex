@@ -2,7 +2,7 @@
 % Please edit documentation in R/snapflex.R
 \name{flex_params}
 \alias{flex_params}
-\title{List the required parameters for a flexdashboard template}
+\title{Required template parameters}
 \usage{
 flex_params(template)
 }

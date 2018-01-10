@@ -102,7 +102,7 @@ flex_templates <- function(){
                      shiny = FALSE, params = TRUE)
 }
 
-#' List the required parameters for a flexdashboard template
+#' Required template parameters
 #'
 #' List the required parameters for a flexdashboard template that must be passed to \code{flex}.
 #'
