@@ -1,0 +1,97 @@
+---
+params:
+  location: NA
+  storyboard: NA
+output:
+  flexdashboard::flex_dashboard:
+    social: menu
+    orientation: rows
+title: "`r paste(paste(params$location, snaplocs::get_state(params$location), sep = ', '), 'RSDS trends')`"
+
+navbar:
+  type: inverse
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/leonawicz/snapflex
+---
+
+```{r knitr_setup, include=FALSE}
+library(flexdashboard)
+knitr::opts_chunk$set(cache=FALSE, tidy=TRUE, message=FALSE, warning=FALSE, fig.showtext=TRUE, dev="CairoPNG",
+                      fig.width = 12, fig.height = 5.75)
+storyboard <- params$storyboard
+rsds1 <- readRDS(url("https://s3.amazonaws.com/leonawicz/apps/snapflex/rsds1/rsds1.rds"))
+loc <- params$location
+loc2 <- paste(loc, snaplocs::get_state(loc), sep = ", ")
+d <- rsds1[[loc2]]
+knitr::read_chunk("flex-rsds-1.R")
+```
+
+```{r setup}
+```
+
+Row
+-------------------------------------
+
+### RSDS time series by model
+
+```{r p1}
+p1
+```
+
+```{r annotations-1, eval=storyboard}
+a1 <- "Figure 1 shows a historical baseline in gray and projected trends for each climate model using the other colors.\n\n"
+a2 <- "These trend lines over the scatter plot of historical observations and projected model outputs are faded to highlight the mean trend over the full time period from 1950 - 2099.\n\n"
+a3 <- "The regression equation for the white trend line is included in the top left corner of the plot.\n\n"
+a <- paste0("***\n\n", a1, a2, a3)
+```
+
+`r if(exists("a")) knitr::knit(text = a)`
+
+### Aggregate historical and projected period RSDS densities
+
+```{r p2}
+p2
+```
+
+```{r annotations-2, eval=storyboard}
+a1 <- "Figure 2 shows historical and projected distributions of annual RSDS over time.\n\n"
+a2 <- "The historical distribution pertains to RSDS observations based on downscaled CRU 4.0 data. The spread in projected outputs comes from pooling the five climate models.\n\n"
+a3 <- "Note that the latter distribution sample contains more observations than the former, using five models as well as a greater number of years.\n\n"
+a <- paste0("***\n\n", a1, a2, a3)
+```
+
+`r if(exists("a")) knitr::knit(text = a)`
+
+Row
+-------------------------------------
+
+### RSDS box plots by model with select statistical tests
+
+```{r p3}
+p3
+```
+
+```{r annotations-3, eval=storyboard}
+a1 <- "Another view of RSDS distributions is shown in figure 3, one for each model.\n\n"
+a2 <- paste0("P-values for select statisticial tests for differences in group means of each climate model with respect to CRU 4.0 as the reference group are shown on the plot.\n", 
+             "The global Kruskal-Wallis p-value is also shown, though for these data sets its significance is not surprising.\n\n")
+a3 <- "Climate model projected period distirbution means for RSDS may differ significantly from the CRU 4.0 baseline in either direction and variability is greater across a set of climate models, as was seen in figure 2.\n\n"
+a <- paste0("***\n\n", a1, a2, a3)
+```
+
+`r if(exists("a")) knitr::knit(text = a)`
+
+### Projected mean RSDS by model for select 30-year windows
+
+```{r p4}
+p4
+```
+
+```{r annotations-4, eval=storyboard}
+a1 <- "Figure 4 shows mean period RSDS for each climate model during each of three future 30-year windows.\n\n"
+a2 <- "Each period is broken out with a different color. Within periods, models are ranked by mean RSDS.\n\n"
+a <- paste0("***\n\n", a1, a2)
+```
+
+`r if(exists("a")) knitr::knit(text = a)`
