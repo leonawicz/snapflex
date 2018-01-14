@@ -42,17 +42,33 @@ NULL
 #' @examples
 #' \dontrun{flex("psc1", template_params = list(location = "Fairbanks"))}
 flex <- function(template, out_dir = getwd(), template_params = NULL, load_static = FALSE){
-  path <- system.file("flex", package = "snapflex")
-  path <- switch(template, "psc1" = file.path(path, "flex-clim-1.Rmd"))
+  path <- .flex_path(template)
   use_shiny <- dplyr::filter(flex_templates(), .data[["id"]] == template)$shiny
   if(!use_shiny) file <- paste0(template, ".html")
   params_required <- dplyr::filter(flex_templates(), .data[["id"]] == template)$params
-  if(params_required) required_params <- strsplit(flex_params(template)$parameters, ",")[[1]]
+  if(params_required) required_params <- strsplit(flex_params(template)$parameters, ", ")[[1]]
   cat("Genrating flexdashboard...\n")
   if(params_required){
     missing_params <- "Additional parameters required. See `flex_params`."
     if(!is.list(template_params) || any(!required_params %in% names(template_params)))
       stop(missing_params)
+    storyboard <- "storyboard" %in% required_params && template_params$storyboard
+    if(storyboard){
+      tmp <- file.path(tempdir(), basename(path))
+      rfile <- gsub(".Rmd", ".R", basename(path))
+      file.copy(path, tmp, overwrite = TRUE)
+      x <- readLines(path)
+      idx <- which(substr(x, 5, 17) == "orientation: ")
+      idx2 <- which(substr(x, 1, 18) == "knitr::read_chunk(")
+      idx3 <- which(substr(x, 1, 3) == "Row" | substr(x, 1, 6) == "Column")
+      x[idx] <- "    storyboard: true"
+      if(length(idx2))
+        x[idx2] <- paste0("knitr::read_chunk(\"", file.path(system.file("flex", package = "snapflex"), rfile), "\")")
+      if(length(idx3))
+        x[c(idx3, idx3 + 1)] <- ""
+      writeLines(x, tmp)
+      path <- tmp
+    }
     suppressWarnings(suppressMessages(
       if(use_shiny){
         rmarkdown::run(path, render_args = template_params)
@@ -61,6 +77,7 @@ flex <- function(template, out_dir = getwd(), template_params = NULL, load_stati
                           params = template_params, quiet = TRUE)
       }
     ))
+    if(storyboard) unlink(tmp)
   } else {
     suppressWarnings(suppressMessages(
       if(use_shiny){
@@ -73,6 +90,14 @@ flex <- function(template, out_dir = getwd(), template_params = NULL, load_stati
   cat("Dashboard complete.\n")
   if(!use_shiny && load_static) utils::browseURL(paste0("file://", file.path(out_dir, file)))
   invisible()
+}
+
+.flex_path <- function(template){
+  file <- switch(template,
+                 "psc1" = "flex-clim-1.Rmd",
+                 "rsds1" = "flex-rsds-1.Rmd"
+                 )
+  file.path(system.file("flex", package = "snapflex"), file)
 }
 
 #' Basic metadata for all flexdashboard templates in snapflex
@@ -97,10 +122,17 @@ flex <- function(template, out_dir = getwd(), template_params = NULL, load_stati
 #' @examples
 #' flex_templates()
 flex_templates <- function(){
-  tibble::data_frame(id = "psc1", description = "projected seasonal climate: single point location",
-                     variable = "temperature and precipitation", deltas = TRUE, period = "seasonal, projected",
-                     shiny = FALSE, params = TRUE)
+  tibble::data_frame(id = .flex_id, description = .flex_desc, variable = .flex_vars, deltas = .flex_deltas,
+                     period = .flex_period, shiny = .flex_shiny, params = .flex_params)
 }
+
+.flex_id <- c("psc1", "rsds1")
+.flex_desc <- c("projected seasonal climate: single point location", "projected RSDS examples: single point location")
+.flex_vars <- c("temperature and precipitation", "rsds")
+.flex_deltas <- c(TRUE, FALSE)
+.flex_period <- c("seasonal, projected", "annual, projected")
+.flex_shiny <- c(FALSE, FALSE)
+.flex_params <- c(TRUE, TRUE)
 
 #' Required template parameters
 #'
@@ -119,5 +151,10 @@ flex_templates <- function(){
 #' @examples
 #' flex_params("psc1")
 flex_params <- function(template){
-  switch(template, "psc1" = list(parameters = "location", hint = "See snaplocs::locs for valid point location names."))
+  switch(template,
+         "psc1" = list(parameters = "location", hint = "See snaplocs::locs for valid point location names."),
+         "rsds1" = list(parameters = "location, storyboard", hint = c(
+           "Nine valid locations: 'Anaktuvuk Pass', 'Anchorage', 'Cantwell', 'Chicken', 'Churchill', 'Fairbanks', 'Juneau', 'Saskatoon', 'Vancouver'.", # nolint
+           "'storyboard': logical."))
+         )
 }
