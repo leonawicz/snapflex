@@ -2,7 +2,7 @@ context("snapflex")
 
 test_that("templates are as expected", {
   expect_is(flex_templates(), "tbl_df")
-  expect_equal(dim(flex_templates()), c(1, 7))
+  expect_equal(dim(flex_templates()), c(2, 7))
 })
 
 test_that("params are as expected", {
