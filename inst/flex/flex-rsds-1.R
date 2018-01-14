@@ -71,7 +71,7 @@ p2 <- ggdensity(d, x = "value", add = "mean", rug = TRUE, color = "Period", fill
 d2 <- d
 d2$Model <- reorder(d$Model, d$value, FUN=median)
 idx <- match(levels(reorder(d$Model, d$value, FUN=median)), levels(d$Model))
-comps <- purrr::map(2:6, ~c(levels(d$Model)[1], levels(d$Model)[.x])) #"GISS.E2.R", "GFDL.CM3"), c("NCAR.CCSM4", "GISS.E2.R"), c("MRI.CGCM3", "NCAR.CCSM4"), c("GFDL.CM3", "IPSL.CM5A.LR"))
+comps <- purrr::map(2:6, ~c(levels(d$Model)[1], levels(d$Model)[.x]))
 p3 <- ggboxplot(d2, x = "Model", y = "value",
                 color = "white", fill = "Model", palette = clrs[idx],
                 add = "jitter", shape = 21, ggtheme = snapplot::theme_snapdark(base_family = "lato", base_size = 20)) +
