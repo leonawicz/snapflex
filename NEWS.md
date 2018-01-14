@@ -1,3 +1,8 @@
+# snapflex 0.1.2
+
+* Added template for example projected RSDS data at several point locations.
+* Refactored `flex` to handle logical storyboard input parameter.
+
 # snapflex 0.1.1
 
 * Added vignette content.
