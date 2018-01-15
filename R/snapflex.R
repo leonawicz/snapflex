@@ -22,7 +22,7 @@ NULL
 #'
 #' Some templates produce static documents. Others use Shiny at runtime.
 #' Flexdashboards with Shiny backend support automatically launch a local instance in the default web browser.
-#' By contrast, the static document templates save the resulting standalone html document to \code{out_dir}, defaulting to the working directory.
+#' By contrast, the static document templates save the resulting standalone html document to \code{out_dir/<file>}, defaulting to the working directory.
 #' In this case, \code{load_static = TRUE} will toggle on the Shiny-like automatic launch for static flexdashboards. This is off by default.
 #'
 #' Note that static does not mean the flexdashboard html document offers no interactivity.
@@ -33,6 +33,7 @@ NULL
 #'
 #' @param template character, the ID of the flexdashboard template. See \code{\link{flex_templates}} for available IDs and descriptions.
 #' @param out_dir character, output directory for standalone html document when \code{template} refers to a static (non-Shiny) flexdashboard.
+#' @param file character, output file name.
 #' @param template_params named list, additional parameters passed to the template if required. See \code{\link{flex_params}} for more information.
 #' @param load_static logical, load static files automatically. See details.
 #'
@@ -41,10 +42,10 @@ NULL
 #' @seealso flex_templates flex_params
 #' @examples
 #' \dontrun{flex("psc1", template_params = list(location = "Fairbanks"))}
-flex <- function(template, out_dir = getwd(), template_params = NULL, load_static = FALSE){
+flex <- function(template, out_dir = getwd(), file = paste0(template, ".html"),
+                 template_params = NULL, load_static = FALSE){
   path <- .flex_path(template)
   use_shiny <- dplyr::filter(flex_templates(), .data[["id"]] == template)$shiny
-  if(!use_shiny) file <- paste0(template, ".html")
   params_required <- dplyr::filter(flex_templates(), .data[["id"]] == template)$params
   if(params_required) required_params <- strsplit(flex_params(template)$parameters, ", ")[[1]]
   cat("Genrating flexdashboard...\n")
