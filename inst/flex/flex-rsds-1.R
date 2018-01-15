@@ -55,14 +55,12 @@ stat_compare_means <- function(mapping = NULL, data = NULL, method = NULL, paire
 
 clrs <- c("gray50", "#00AFBB", "#E7B800", snapplot::snapalettes()[c(4, 7, 8)])
 bhats <- signif(lm(d$value ~ d$Year)$coefficients, 3)
-#eq <- paste0(bquote(hat(y)[rsds]==.(bhats[1])+.(bhats[2])*italic(Year)))
-#eq <- gsub(" ", "", paste(paste(bquote(hat(y)[rsds]==.(bhats[1])+.(bhats[2])*italic(Year)))[c(2, 1, 3)], collapse = ""))
 lm_eqn <- function(df){
   m <- lm(value ~ Year, df)
-  eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,
-                   list(a = format(coef(m)[1], digits = 2),
-                        b = format(coef(m)[2], digits = 2),
-                        r2 = format(summary(m)$r.squared, digits = 3)))
+  eq <- substitute(~~italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,
+                   list(a = signif(coef(m)[1], 3),
+                        b = signif(coef(m)[2], 3),
+                        r2 = round(summary(m)$r.squared, 3)))
   as.character(as.expression(eq))
 }
 
