@@ -6,13 +6,8 @@ output:
   flexdashboard::flex_dashboard:
     social: menu
     orientation: rows
+    css: null
 title: "`r paste(paste(params$location, snaplocs::get_state(params$location), sep = ', '), 'RSDS trends')`"
-
-navbar:
-  type: inverse
-  right:
-    - icon: fa-github fa-lg
-      href: https://github.com/leonawicz/snapflex
 ---
 
 ```{r knitr_setup, include=FALSE}
