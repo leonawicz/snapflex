@@ -2,6 +2,7 @@
 
 * Added template for example projected RSDS data at several point locations.
 * Refactored `flex` to handle logical storyboard input parameter.
+* Added `file` argument to `flex` to override default output filename.
 
 # snapflex 0.1.1
 
