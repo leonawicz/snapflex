@@ -24,6 +24,7 @@ Imports:
     Cairo,
     ggplot2,
     dplyr,
+    tidyr,
     tibble,
     leaflet,
     ggpubr,
