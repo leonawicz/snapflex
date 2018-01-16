@@ -1,4 +1,4 @@
-# snapflex 0.2.0
+# snapflex 0.2.0 (Release date: 2018-01-16)
 
 * Added support to `flex` for passing along `flex_dashboard` arguments.
 * Made passing `css` to `...` work with remote CSS files from a CDN. If a template has its own CSS, this will be loaded prior to any user-specified CSS.
