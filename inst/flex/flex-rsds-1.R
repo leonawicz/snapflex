@@ -82,8 +82,9 @@ lm_eqn <- function(df){
 n_proj <- length(unique(dsub$Year))
 rsds1 <- bhats[1] + bhats[2] * min(dsub$Year)
 rsds2 <- bhats[1] + bhats[2] * max(dsub$Year)
-total_pct_change <- signif(100 * (rsds2 / rsds1 - 1), 2)
-change_per_decade <- round(total_pct_change[1]^(1 / n_proj/10), 1)
+totchg <- rsds2 / rsds1 - 1
+total_pct_change <- signif(100 * (totchg), 2)
+change_per_decade <- round(totchg^(10 / n_proj), 1)
 totpct <- paste0("~~Total~projected~change:~", total_pct_change, '*symbol("\045")')
 decpct <- paste0("~~", change_per_decade, '*symbol("\045")/decade')
 yrange <- diff(range(d$value))
