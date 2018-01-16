@@ -56,6 +56,8 @@ stat_compare_means <- function(mapping = NULL, data = NULL, method = NULL, paire
   }
 }
 
+d$value <- d$value / 0.0864 # MJ*day/m^2 to W/m^2
+
 clrs <- c("gray50", "#00AFBB", "#E7B800", snapplot::snapalettes()[c(4, 7, 8)])
 clrs2 <- clrs[2:3]
 clrs3 <- c("#00AFBB", "#E7B800", snapplot::snapalettes()[4])
@@ -87,25 +89,31 @@ decpct <- paste0("~~", change_per_decade, '*symbol("\045")/decade')
 yrange <- diff(range(d$value))
 totpos <- max(d$value) - 0.075 * yrange
 decpos <- max(d$value) - 0.15 * yrange
+prime_lab <- expression(Solar~Irradiance~(W/m^2))
+prime_lab2 <- "solar irradiance"
+pct_change_statement <- paste0("The estimated projected percent change in solar irradiance over the period 2006 - 2100 using the five climate models is ", total_pct_change,
+                               "%. This is approximately ", change_per_decade, "% change per decade during the period.")
 
 p1 <- ggplot(d, aes(Year, value)) + geom_smooth(aes(colour = Model), se = FALSE, linetype = 2, size = 0.5) +
   geom_point(aes(colour = Model), alpha = 0.2) +
   scale_colour_manual(values = clrs) +
   geom_smooth(data = dsub, colour = contrast, method = "lm", size = 1) +
-  plot_theme(base_family = "gfont", base_size = 20) + theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm")) + guides(colour = guide_legend(override.aes = list(size=5))) +
+  plot_theme(base_family = "gfont", base_size = 20) + theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), axis.text = element_text(size = 40), legend.text = element_text(size = 40)) + guides(colour = guide_legend(override.aes = list(size=5))) +
   scale_x_continuous(expand = c(0, 0)) +
-  labs(title = paste("Projected trends in", loc2,"RSDS"),
-       subtitle = "By model and average", x = "Year", y = "RSDS") +
-  annotate("text", -Inf, Inf, label = lm_eqn(d), parse = TRUE, size = 12, colour = contrast, hjust = 0, vjust = 1) +
+  labs(title = paste("Projected trends in", loc2, prime_lab2),
+       subtitle = "By model and average", x = "Year", y = prime_lab) +
+  annotate("text", -Inf, Inf, label = lm_eqn(d), parse = TRUE, size = 12, colour = contrast, hjust = 0, vjust = 1)
+
+if(params$annotate_plot) p1 <- p1 +
   annotate("text", -Inf, totpos, label = totpct, parse = TRUE, size = 14, colour = contrast, hjust = 0, vjust = 1) +
   annotate("text", -Inf, decpos, label = decpct, parse = TRUE, size = 14, colour = contrast, hjust = 0, vjust = 1)
 
 p2 <- ggdensity(d, x = "value", add = "mean", rug = TRUE, color = "Period", fill = "Period",
                 palette = clrs2, size = 1, ggtheme = plot_theme(base_family = "gfont", base_size = 20)) +
-  theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm")) + guides(colour = guide_legend(override.aes = list(size=5))) +
+  theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), axis.text = element_text(size = 40), legend.text = element_text(size = 40)) + guides(colour = guide_legend(override.aes = list(size=5))) +
   scale_x_continuous(expand = c(0, 0)) +
-  labs(title = paste("Distributions of", loc2, "RSDS over time"),
-       subtitle = "1950 - 2013 CRU 4.0 and 2006 - 2100 GCM outputs", x = "RSDS", y = "Density")
+  labs(title = paste("Distributions of", loc2, paste(prime_lab2, "over time")),
+       subtitle = "1950 - 2013 CRU 4.0 and 2006 - 2100 GCM outputs", x = prime_lab, y = "Density")
 
 d2 <- d
 d2$Model <- reorder(d$Model, d$value, FUN=median)
@@ -116,10 +124,10 @@ p3 <- ggboxplot(d2, x = "Model", y = "value",
                 add = "jitter", shape = 21, ggtheme = plot_theme(base_family = "gfont", base_size = 20)) +
   stat_compare_means(comparisons = comps, color = contrast, textsize = 20) +
   stat_compare_means(colour = contrast, size = 12) +
-  theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), legend.key.size = unit(1,"line")) +
+  theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), legend.key.size = unit(1,"line"), axis.text = element_text(size = 40), legend.text = element_text(size = 40), legend.position = "none") +
   scale_x_discrete(expand = c(0, 0.4)) +
-  labs(title = paste("Distributions of", loc2, "RSDS by model"),
-       subtitle = "1950 - 2013 CRU 4.0 and 2006 - 2100 GCM outputs. Global and select pairwise tests for difference in means.", x = "Model", y = "RSDS")
+  labs(title = paste("Distributions of", loc2, prime_lab2, "by model"),
+       subtitle = "1950 - 2013 CRU 4.0 and 2006 - 2100 GCM outputs. Global and select pairwise tests for difference in means.", x = "Model", y = prime_lab)
 
 dsum <- filter(d, Model != "CRU 4.0" & Year >= 2010 & Year < 2100) %>%
   mutate(Window = ifelse(Year %in% 2010:2039, "2010 - 2039", ifelse(Year %in% 2040:2069, "2040 - 2069", "2070 - 2099"))) %>%
@@ -129,13 +137,13 @@ dsum <- filter(d, Model != "CRU 4.0" & Year >= 2010 & Year < 2100) %>%
 
 p4 <- ggplot(dsum, aes(factor(Model_Window, levels = unique(Model_Window)), Mean, colour = Window)) + scale_colour_manual(values = clrs3) +
   coord_flip() + plot_theme(base_family = "gfont", base_size = 20) +
-  theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm")) + guides(colour = guide_legend(title = "Period"), override.aes=list(alpha=1)) +
-  scale_y_continuous(expand = c(0.025, 0)) +
+  theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), axis.text = element_text(size = 40), legend.text = element_text(size = 40)) + guides(colour = guide_legend(title = "Period"), override.aes=list(alpha=1)) +
+  scale_y_continuous(expand = c(0.025, 0)) + scale_x_discrete(expand = c(0, 1)) +
   geom_segment(aes(y = min(Mean), xend = Model_Window, yend = Mean, colour = Window), size = 1) +
-  geom_point(aes(colour = Window), shape = 15, size = 10) +
-  geom_text(aes(label = round(Mean, 1)), colour = contrast, size = 10) +
-  labs(title = "Projected mean RSDS by model and time period",
-       subtitle = loc2, x = NULL, y = "RSDS")
+  geom_point(aes(colour = Window), shape = 19, size = 3) +
+  geom_text(aes(label = round(Mean, 1)), colour = contrast, size = 10, vjust = 1.7) +
+  labs(title = paste("Projected mean", prime_lab2, "by model and time period"),
+       subtitle = loc2, x = NULL, y = prime_lab)
 
 set_axis_label_colors <- function(g, data, label, axis){
   gb <- ggplot2::ggplot_build(g)
