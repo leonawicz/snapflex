@@ -201,8 +201,8 @@
     <p>Generate local flexdashboards for SNAP data sets from package templates.</p>
     
 
-    <pre class="usage"><span class='fu'>flex</span>(<span class='no'>template</span>, <span class='kw'>out_dir</span> <span class='kw'>=</span> <span class='fu'>getwd</span>(), <span class='kw'>template_params</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>load_static</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>flex</span>(<span class='no'>template</span>, <span class='kw'>out_dir</span> <span class='kw'>=</span> <span class='fu'>getwd</span>(), <span class='kw'>file</span> <span class='kw'>=</span> <span class='fu'>paste0</span>(<span class='no'>template</span>, <span class='st'>".html"</span>),
+  <span class='kw'>template_params</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>load_static</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -216,12 +216,20 @@
       <td><p>character, output directory for standalone html document when <code>template</code> refers to a static (non-Shiny) flexdashboard.</p></td>
     </tr>
     <tr>
+      <th>file</th>
+      <td><p>character, output file name.</p></td>
+    </tr>
+    <tr>
       <th>template_params</th>
-      <td><p>named list, additional parameters passed to the template if required. See <code><a href='flex_params.html'>flex_params</a></code> for more information.</p></td>
+      <td><p>named list, additional parameters passed to a specific template if required. See <code><a href='flex_params.html'>flex_params</a></code> for more information.</p></td>
     </tr>
     <tr>
       <th>load_static</th>
       <td><p>logical, load static files automatically. See details.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments passed to <code>flex_dashboard</code>. See details.</p></td>
     </tr>
     </table>
     
@@ -232,13 +240,17 @@ If a given template requires custom arguments to be provided, for example a loca
 these arguments can be passed as a named list to <code>template_params</code>.</p>
 <p>Some templates produce static documents. Others use Shiny at runtime.
 Flexdashboards with Shiny backend support automatically launch a local instance in the default web browser.
-By contrast, the static document templates save the resulting standalone html document to <code>out_dir</code>, defaulting to the working directory.
+By contrast, the static document templates save the resulting standalone html document to <code>out_dir/&lt;file&gt;</code>, defaulting to the working directory.
 In this case, <code>load_static = TRUE</code> will toggle on the Shiny-like automatic launch for static flexdashboards. This is off by default.</p>
 <p>Note that static does not mean the flexdashboard html document offers no interactivity.
 A template may still offer the ability to switch between different graphs and tables and explore different content.
 However, all data is embedded in the document. This makes it useful as a standalone file requiring no Shiny server backend,
 but it also means that more complex static templates result in larger output file sizes and they cannot achieve anywhere near the
 complexity of a flexdashboard that uses Shiny.</p>
+<p>Additional arguments passed to <code>flex_dashboard</code> typically include <code>theme</code>, <code>css</code> and <code>storyboard</code>.
+Unless a given template supports it specifically, using <code>storyboard = TRUE</code> will not add any meaningful content.
+Choice of <code>theme</code> is limited to those available in the <code>flexdashboard</code> package.
+Additional CSS can be attached with <code>css</code>. Styling contained in a CSS file may be attached remotely via CDN (Content Delivery Network).</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -247,7 +259,13 @@ complexity of a flexdashboard that uses Shiny.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>flex</span>(<span class='st'>"psc1"</span>, <span class='kw'>template_params</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>location</span> <span class='kw'>=</span> <span class='st'>"Fairbanks"</span>))
+<span class='fu'><a href='flex_params.html'>flex_params</a></span>(<span class='st'>"rsds1"</span>)
+<span class='no'>pars</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>location</span> <span class='kw'>=</span> <span class='st'>"Vancouver"</span>)
+<span class='fu'>flex</span>(<span class='st'>"rsds1"</span>, <span class='kw'>template_params</span> <span class='kw'>=</span> <span class='no'>pars</span>)
+<span class='fu'>flex</span>(<span class='st'>"rsds1"</span>, <span class='kw'>template_params</span> <span class='kw'>=</span> <span class='no'>pars</span>, <span class='kw'>theme</span> <span class='kw'>=</span> <span class='st'>"sandstone"</span>, <span class='kw'>storyboard</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='no'>pars</span>$<span class='no'>gfont</span> <span class='kw'>&lt;-</span> <span class='st'>"Source Sans Pro"</span>
+<span class='no'>pars</span>$<span class='no'>snaptheme</span> <span class='kw'>&lt;-</span> <span class='st'>"theme_snap"</span>
+<span class='fu'>flex</span>(<span class='st'>"rsds1"</span>, <span class='kw'>template_params</span> <span class='kw'>=</span> <span class='no'>pars</span>)
 <span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

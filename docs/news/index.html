@@ -199,12 +199,29 @@
     </div>
 
     <div class="contents">
+    <div id="snapflex-0-2-0" class="section level1">
+<h1 class="hasAnchor">
+<a href="#snapflex-0-2-0" class="anchor"></a>snapflex 0.2.0</h1>
+<ul>
+<li>Added support to <code>flex</code> for passing along <code>flex_dashboard</code> arguments.</li>
+<li>Made passing <code>css</code> to <code>...</code> work with remote CSS files from a CDN. If a template has its own CSS, this will be loaded prior to any user-specified CSS.</li>
+<li>Improved handling of <code>flex_dashboard</code> arguments and <code>template_params</code> arguments together, specifically <code>orientation</code>, <code>theme</code>, <code>storyboard</code> and <code>css</code>.</li>
+<li>Added <code>gfont</code> optional template argument for choice of font name from Google Fonts. Used in <code>template_params</code> list.</li>
+<li>Added choice of primary SNAP plot theme via <code>snaptheme</code> argument. Used in <code>template_params</code> list.</li>
+<li>Allowed for template-specific parameters that have default settings so that these do not have to be supplied by the user when rendering a template.</li>
+<li>Ensured that templates use color palettes that switch during rendering conditional on choice of light or dark SNAP plot theme.</li>
+<li>Refactored <code>flex_params</code>, now returns a data frame with required and optional parameters.</li>
+<li>Updated existing templates.</li>
+<li>Updated and added new sections to vignette.</li>
+</ul>
+</div>
     <div id="snapflex-0-1-2" class="section level1">
 <h1 class="hasAnchor">
 <a href="#snapflex-0-1-2" class="anchor"></a>snapflex 0.1.2</h1>
 <ul>
 <li>Added template for example projected RSDS data at several point locations.</li>
 <li>Refactored <code>flex</code> to handle logical storyboard input parameter.</li>
+<li>Added <code>file</code> argument to <code>flex</code> to override default output filename.</li>
 </ul>
 </div>
     <div id="snapflex-0-1-1" class="section level1">
@@ -242,6 +259,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#snapflex-0-2-0">0.2.0</a></li>
         <li><a href="#snapflex-0-1-2">0.1.2</a></li>
         <li><a href="#snapflex-0-1-1">0.1.1</a></li>
         <li><a href="#snapflex-0-1-0">0.1.0</a></li>

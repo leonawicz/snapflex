@@ -203,14 +203,18 @@
 <div id="user-specifications" class="section level2">
 <h2 class="hasAnchor">
 <a href="#user-specifications" class="anchor"></a>User specifications</h2>
-<p>Regarding the last item on the above list, some templates allow for limited user customization. For example, a flexdashboard template for climate trends at a point location may require the user to provide a specific location from a list of available options so that the template can be used for more than a single, hard-coded location. The row in <code><a href="../reference/flex_templates.html">flex_templates()</a></code> pertaining to the <code>psc1</code> template for projected seasonal climate at a point location shows <code>TRUE</code> under the <code>params</code> column. This means that this template requires user-specified parameters. Use <code>flex_params</code> with the template ID to see what is required.</p>
+<p>Regarding the last item on the above list, templates allow limited user customization. For example, all templates allow global plot settings for the plot theme and font attributes to be changed from their template-specific defaults via <code>snaptheme</code>, <code>gfont</code>, <code>regular</code> and <code>bold</code>. <code>gfont</code> sets the <a href="https://fonts.google.com/">Google font</a> and <code>regular</code> and <code>bold</code> take numeric weights.</p>
+<p>Beyond these general optional parameters, each template may require additional unique parameters. These cannot be ignored like the optional ones. They do not have default settings and rely on the user to choose their values. For example, a flexdashboard template for climate trends at a point location may require the user to provide a specific location from a list of available options so that the template can be used for more than a single, hard-coded location. The row in <code><a href="../reference/flex_templates.html">flex_templates()</a></code> pertaining to the <code>psc1</code> template for projected seasonal climate at a point location shows <code>TRUE</code> under the <code>params</code> column. This means that this template requires user-specified parameters. It would show <code>FALSE</code> if only optional parameters were available. Use <code>flex_params</code> with the template ID to see what is required.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/flex_params.html">flex_params</a></span>(<span class="dt">template =</span> <span class="st">"psc1"</span>)
-<span class="co">#&gt; $parameters</span>
-<span class="co">#&gt; [1] "location"</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $hint</span>
-<span class="co">#&gt; [1] "See snaplocs::locs for valid point location names."</span></code></pre></div>
-<p><code>flex_params</code> returns a list of two elements. The first is a vector of parameter names. In this case there is only one: location. Having this information makes it possible to now use this template with <code>flex</code>, which would return an error if any required parameter is not provided. The second is a character string hint providing some context or description of what is considered a valid value for each parameter.</p>
+<span class="co">#&gt; # A tibble: 5 x 3</span>
+<span class="co">#&gt;   parameter value      hint                                               </span>
+<span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;                                              </span>
+<span class="co">#&gt; 1 location  &lt;NA&gt;       See snaplocs::locs for valid point location names. </span>
+<span class="co">#&gt; 2 gfont     Play       A valid Google Fonts name. See https://fonts.googl~</span>
+<span class="co">#&gt; 3 regular   400        Regular Google font weight.                        </span>
+<span class="co">#&gt; 4 bold      400        Bold Google font weight.                           </span>
+<span class="co">#&gt; 5 snaptheme theme_snap A ggplot theme from the snapplot package, e.g., 't~</span></code></pre></div>
+<p><code>flex_params</code> returns a data frame as above for any given template ID. The first column gives parameter names. The second gives their default values. If <code>NA</code>, it is a required parameter and must be provided by the user when rendering a flexdashboard template. In this case there is only one required parameter: location. Having this information makes it possible to now use this template with <code>flex</code>, which returns an error if any required parameter is not provided. The third column show hints that provide some context or description of what is considered a valid value for each parameter in case you are not familiar with the underlying SNAP data or flexdashboard template.</p>
 </div>
 <div id="creating-flexdashboards" class="section level2">
 <h2 class="hasAnchor">
@@ -229,6 +233,27 @@
 <p>Some templates use Shiny runtime and launch in your web browser as an app. For these templates, there is no static HTML document saved to <code>out_dir</code>.</p>
 <p>Remember that <code>snapflex</code> is part of the <a href="https://leonawicz.github.io/snapverse/">SNAPverse</a>. It is for showcasing SNAP data sets. If using <code>snapflex</code> it is important to have a more general familiarity with the SNAPverse. Specifically, it is important in the example above to know that available point locations associated with SNAP climate data are part of the <code>snaplocs</code> package. <code>flex_params</code> provides this hint, but generally speaking, success using SNAPverse packages correlates with the level of familiarity you have with the verse and the SNAP data sets it wraps around.</p>
 </div>
+<div id="optional-parameters" class="section level2">
+<h2 class="hasAnchor">
+<a href="#optional-parameters" class="anchor"></a>Optional parameters</h2>
+<p>Recreating the above dashboard using different values for optional parameters can be done like in the following example.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pars &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">location =</span> <span class="st">"Anchorage"</span>, <span class="dt">gfont =</span> <span class="st">"Source Sans Pro"</span>, <span class="dt">regular =</span> <span class="dv">300</span>, 
+    <span class="dt">bold =</span> <span class="dv">400</span>, <span class="dt">snaptheme =</span> <span class="st">"theme_snapdark"</span>)
+<span class="kw"><a href="../reference/flex.html">flex</a></span>(<span class="dt">template =</span> <span class="st">"psc1"</span>, <span class="dt">template_params =</span> pars)</code></pre></div>
+<div id="flex_dashboard-arguments" class="section level3">
+<h3 class="hasAnchor">
+<a href="#flex_dashboard-arguments" class="anchor"></a>flex_dashboard arguments</h3>
+<p>The <code>...</code> argument can be used to pass a list of arguments directly to <code><a href="http://www.rdocumentation.org/packages/flexdashboard/topics/flex_dashboard">flexdashboard::flex_dashboard</a></code> for additional control over the structure and appearance of template output. Common arguments include <code>theme</code>, <code>css</code> and <code>storyboard</code>. See the <a href="http://rmarkdown.rstudio.com/flexdashboard/">flexdashboard</a> package for more information.</p>
+</div>
+<div id="storyboards" class="section level3">
+<h3 class="hasAnchor">
+<a href="#storyboards" class="anchor"></a>Storyboards</h3>
+<p>Any template can be alternatively rendered as a storyboard-style flexdashboard. However, not all templates are intended for use this way, so mileage may vary. Some templates are dual-designed to support both formats. For example, the <code>rsds1</code> template provides four plots in a standard layout which little additional information. This is useful if you already know what you are looking at. If <code>storyboard = TRUE</code>, the template will be rendered to a storyboard. This provides additional textual summaries for each plot that are not part of the standard, simplified layout. It also allows for larger display of individual plots.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pars &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">location =</span> <span class="st">"Vancouver"</span>)
+<span class="kw"><a href="../reference/flex.html">flex</a></span>(<span class="dt">template =</span> <span class="st">"rsds1"</span>, <span class="dt">template_params =</span> pars)
+<span class="kw"><a href="../reference/flex.html">flex</a></span>(<span class="dt">template =</span> <span class="st">"rsds1"</span>, <span class="dt">template_params =</span> , <span class="dt">storyboard =</span> <span class="ot">TRUE</span>)</code></pre></div>
+</div>
+</div>
 <div id="development-status" class="section level2">
 <h2 class="hasAnchor">
 <a href="#development-status" class="anchor"></a>Development status</h2>
@@ -245,6 +270,7 @@
 <li><a href="#available-templates">Available templates</a></li>
       <li><a href="#user-specifications">User specifications</a></li>
       <li><a href="#creating-flexdashboards">Creating flexdashboards</a></li>
+      <li><a href="#optional-parameters">Optional parameters</a></li>
       <li><a href="#development-status">Development status</a></li>
       </ul>
 </div>

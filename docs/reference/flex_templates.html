@@ -219,6 +219,11 @@ This includes the following information:</p>
 <li><p>whether Shiny is used at runtime to launch a local instance of an interactive flexdashboard rather than a standalone html document.</p></li>
 <li><p>whether the template requires any additional parameters specified by the user.</p></li>
 </ul>
+    <p>Regarding required template-specific parameters, note that all templates in <code>snapflex</code> accept some parameters that are optional
+rather than required because the templates have set defaults for these if ignored. For example, all templates accept <code>gfont</code> , <code>regular</code>, <code>bold</code> and <code>snaptheme</code>.
+Since optional parameters are always available and are safely ignored, entries in the final column of the data frame are <code>TRUE</code> only
+if a template has required parameters where the user must always specify the value when rendering a template.
+Use <code><a href='flex_params.html'>flex_params</a></code> to view a table of information about all parameters available for a given template.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 

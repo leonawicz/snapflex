@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Required template parameters — flex_params â€¢ snapflex</title>
+<title>Template parameters — flex_params â€¢ snapflex</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -194,11 +194,11 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Required template parameters</h1>
+    <h1>Template parameters</h1>
     </div>
 
     
-    <p>List the required parameters for a flexdashboard template that must be passed to <code>flex</code>.</p>
+    <p>List the required and optional parameters for a flexdashboard template passed to <code>flex</code>.</p>
     
 
     <pre class="usage"><span class='fu'>flex_params</span>(<span class='no'>template</span>)</pre>
@@ -218,9 +218,10 @@
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>If this function returns <code>NULL</code> for a given template, then no parameters are required to be passed in a named list when calling <code>flex</code>.
-Otherwise a length-2 list is returned. The first list element contains the vector of required parameters.
-The second element contains information regarding what constitutes valid values for the parameters if you are less familiar with the SNAPverse and SNAP climate data sets.</p>
+    <p>This function returns a data frame with three columns. The first contains parameter names pertaining to a specific template.
+The second is a column of default values. If <code>NA</code>, the parameter is required to be passed by the user any time the template is rendered using <code>flex</code>.
+Otherwise, the parameter is optional, given that a default value is set by the template if the user ignores the parameter.
+The third is a column of hints, containing information regarding what constitutes valid values for the parameters in case you are less familiar with the SNAPverse and SNAP climate data sets.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -228,12 +229,14 @@ The second element contains information regarding what constitutes valid values 
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>flex_params</span>(<span class='st'>"psc1"</span>)</div><div class='output co'>#&gt; $parameters
-#&gt; [1] "location"
-#&gt; 
-#&gt; $hint
-#&gt; [1] "See snaplocs::locs for valid point location names."
-#&gt; </div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>flex_params</span>(<span class='st'>"psc1"</span>)</div><div class='output co'>#&gt; # A tibble: 5 x 3
+#&gt;   parameter value      hint                                                    
+#&gt;   &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;                                                   
+#&gt; 1 location  &lt;NA&gt;       See snaplocs::locs for valid point location names.      
+#&gt; 2 gfont     Play       A valid Google Fonts name. See https://fonts.google.com~
+#&gt; 3 regular   400        Regular Google font weight.                             
+#&gt; 4 bold      400        Bold Google font weight.                                
+#&gt; 5 snaptheme theme_snap A ggplot theme from the snapplot package, e.g., 'theme_~</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
