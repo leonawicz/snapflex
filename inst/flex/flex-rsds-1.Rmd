@@ -2,9 +2,12 @@
 params:
   location: NA
   storyboard: NA
+  snaptheme: NA
+  gfont: NA
+  regular: NA
+  bold: NA
 output:
   flexdashboard::flex_dashboard:
-    social: menu
     orientation: rows
     css: null
 title: "`r paste(paste(params$location, snaplocs::get_state(params$location), sep = ', '), 'RSDS trends')`"
@@ -14,12 +17,12 @@ title: "`r paste(paste(params$location, snaplocs::get_state(params$location), se
 library(flexdashboard)
 knitr::opts_chunk$set(cache=FALSE, tidy=TRUE, message=FALSE, warning=FALSE, fig.showtext=TRUE, dev="CairoPNG",
                       fig.width = 12, fig.height = 5.75)
+knitr::read_chunk("flex-rsds-1.R")
 storyboard <- params$storyboard
 rsds1 <- readRDS(url("https://s3.amazonaws.com/leonawicz/apps/snapflex/rsds1/rsds1.rds"))
 loc <- params$location
 loc2 <- paste(loc, snaplocs::get_state(loc), sep = ", ")
 d <- rsds1[[loc2]]
-knitr::read_chunk("flex-rsds-1.R")
 ```
 
 ```{r setup}
@@ -36,8 +39,8 @@ p1
 
 ```{r annotations-1, eval=storyboard}
 a1 <- "Figure 1 shows a historical baseline in gray and projected trends for each climate model using the other colors.\n\n"
-a2 <- "These trend lines over the scatter plot of historical observations and projected model outputs are faded to highlight the mean trend over the full time period from 1950 - 2099.\n\n"
-a3 <- "The regression equation for the white trend line is included in the top left corner of the plot.\n\n"
+a2 <- "The colored trend lines and scatter plot of projected model outputs are faded to highlight the mean trend over the climate model time period (2006 - 2100). Average total change in RSDS as well as average change per decade  over this period is shown on the plot.\n\n"
+a3 <- paste("The regression equation for the", contrast, "trend line is also included. This helps show any trend in RSDS with time, but keep in mind that a simple linear regression model of mean annual RSDS on time is not intended to explain much of the variation in RSDS across models, hence the low R-squared.\n\n")
 a <- paste0("***\n\n", a1, a2, a3)
 ```
 

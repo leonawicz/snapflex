@@ -5,13 +5,19 @@ output:
     orientation: rows
     css: flex.css
 params:
-   location: NA
+  location: NA
+  storyboard: NA
+  snaptheme: NA
+  gfont: NA
+  regular: NA
+  bold: NA
 ---
 
 ```{r knitr_setup, include=FALSE}
 library(flexdashboard)
 knitr::opts_chunk$set(cache=FALSE, tidy=TRUE, message=FALSE, warning=FALSE, fig.showtext=TRUE, dev="CairoPNG")
 knitr::read_chunk("flex-clim-1.R")
+storyboard <- params$storyboard
 loc <- params$location
 ```
 
@@ -45,10 +51,10 @@ Row {data-height=350}
 
 ### Mean temperature change from baseline
 
-```{r plot2a, fig.width=6, fig.height=3}
+```{r plot2a, fig.width=ifelse(storyboard, 12, 6), fig.height=ifelse(storyboard, 5, 3)}
 ```
 
 ### Mean precipitation change from baseline
     
-```{r plot2b, fig.width=6, fig.height=3}
+```{r plot2b, fig.width=ifelse(storyboard, 12, 6), fig.height=ifelse(storyboard, 5, 3)}
 ```

@@ -2,29 +2,34 @@
 library(leaflet)
 library(dplyr)
 library(ggplot2)
-library(showtext)
-font_add_google("Lato", "lato")
-showtext_auto()
 
 library(snapplot)
+plot_theme <- get(params$snaptheme)
+
+library(showtext)
+font_add_google(params$gfont, "gfont", regular.wt = params$regular, bold.wt = params$bold)
+showtext_auto()
+
 library(snapstat)
 library(snapclim)
 reg <- snaplocs::get_province(loc)
 
 clrs1 <- snapplot::snapalettes(1)[c(1, 2, 4, 8)]
-gg_ts <- function(x, variable, title, subtitle, col, base_size = 28, base_family = "lato"){
+contrast <- ifelse(params$snaptheme %in% c("theme_snapdark"), "white", "black")
+
+gg_ts <- function(x, variable, title, subtitle, col, base_size = 28, base_family = "gfont"){
   ggplot(filter(x, Var == variable), aes(Year, Mean, colour = Season, fill = Season)) +
     geom_line(size = 1, alpha = 0.5) + geom_point(size = 2) +
-    geom_point(colour = "white", pch = 21, size = 2) + geom_smooth(method = "lm", se = FALSE) +
-    snapplot::theme_snap(base_size = base_size, base_family = base_family) +
+    geom_point(colour = contrast, pch = 21, size = 2) + geom_smooth(method = "lm", se = FALSE) +
+    plot_theme(base_size = base_size, base_family = base_family) +
     scale_color_manual(labels = levels(x$Season), values = col) +
     scale_fill_manual(labels = levels(x$Season), values = col) +
     labs(title = title, subtitle = subtitle)
 }
-gg_bars <- function(x, variable, title, subtitle, col, base_size = 28, base_family = "lato"){
+gg_bars <- function(x, variable, title, subtitle, col, base_size = 28, base_family = "gfont"){
   ggplot(filter(x, Var == variable), aes(Season, Mean, colour = Season, fill = Season)) +
     geom_col(size = 1) +
-    snapplot::theme_snap(base_size = base_size, base_family = base_family) +
+    plot_theme(base_size = base_size, base_family = base_family) +
     scale_colour_manual(labels = levels(x$Season), values = col) +
     scale_fill_manual(labels = levels(x$Season), values = col) +
     labs(title = title, subtitle = subtitle)
@@ -35,7 +40,7 @@ x <- climdata("ar5stats", loc, time_scale = "seasonal") %>%
   deltas() %>% filter(Year >= 2020 & Year < 2100) %>% group_by(Var, Season, Year) %>%
   summarise(Mean = mean(Mean))
 x2 <- filter(x, Year >= 2070) %>% summarise(Mean = mean(Mean)) %>%
-  mutate(Mean = ifelse(Var == "pr", Mean - 1, Mean))
+  mutate(Mean = ifelse(Var == "pr", 100 * (Mean - 1), Mean))
 subtitle <- "From 1960 - 1989 seasonal climatologies"
 
 ndec <- (mean(c(2070, 2099)) - mean(c(1960, 1989))) / 10

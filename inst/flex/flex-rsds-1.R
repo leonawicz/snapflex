@@ -3,9 +3,12 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(ggpubr)
+
 library(snapplot)
+plot_theme <- get(params$snaptheme)
+
 library(showtext)
-font_add_google("Jura", "gfont")
+font_add_google(params$gfont, "gfont", regular.wt = params$regular, bold.wt = params$bold)
 showtext_auto()
 
 stat_compare_means <- function(mapping = NULL, data = NULL, method = NULL, paired = FALSE, # override issues in ggpubr
@@ -54,7 +57,18 @@ stat_compare_means <- function(mapping = NULL, data = NULL, method = NULL, paire
 }
 
 clrs <- c("gray50", "#00AFBB", "#E7B800", snapplot::snapalettes()[c(4, 7, 8)])
-bhats <- signif(lm(d$value ~ d$Year)$coefficients, 3)
+clrs2 <- clrs[2:3]
+clrs3 <- c("#00AFBB", "#E7B800", snapplot::snapalettes()[4])
+contrast <- ifelse(params$snaptheme %in% c("theme_snapdark"), "white", "black")
+
+dsub <- filter(d, Model != "CRU 4.0")
+dsum <- dsub %>%
+  mutate(Window = ifelse(Year %in% 2010:2039, "2010 - 2039", ifelse(Year %in% 2040:2069, "2040 - 2069", "2070 - 2099"))) %>%
+  mutate(Window = factor(Window, levels = unique(Window))) %>%
+  group_by(Window, Model) %>% summarise(Mean = mean(value)) %>%
+  mutate(Model_Window = paste(Window, Model)) %>% arrange(Window, Mean)
+
+bhats <- signif(lm(value ~ Year, data = dsub)$coefficients, 3)
 lm_eqn <- function(df){
   m <- lm(value ~ Year, df)
   eq <- substitute(~~italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,
@@ -63,19 +77,31 @@ lm_eqn <- function(df){
                         r2 = round(summary(m)$r.squared, 3)))
   as.character(as.expression(eq))
 }
+n_proj <- length(unique(dsub$Year))
+rsds1 <- bhats[1] + bhats[2] * min(dsub$Year)
+rsds2 <- bhats[1] + bhats[2] * max(dsub$Year)
+total_pct_change <- signif(100 * (rsds2 / rsds1 - 1), 2)
+change_per_decade <- signif(10 * total_pct_change / n_proj, 2)
+totpct <- paste0("~~Total~projected~change:~", total_pct_change, '*symbol("\045")')
+decpct <- paste0("~~", change_per_decade, '*symbol("\045")/decade')
+yrange <- diff(range(d$value))
+totpos <- max(d$value) - 0.075 * yrange
+decpos <- max(d$value) - 0.15 * yrange
 
 p1 <- ggplot(d, aes(Year, value)) + geom_smooth(aes(colour = Model), se = FALSE, linetype = 2, size = 0.5) +
   geom_point(aes(colour = Model), alpha = 0.2) +
   scale_colour_manual(values = clrs) +
-  geom_smooth(colour = "white", method = "lm", size = 1) +
-  theme_snapdark(base_family = "gfont", base_size = 20) + theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm")) + guides(colour = guide_legend(override.aes = list(size=5))) +
+  geom_smooth(data = dsub, colour = contrast, method = "lm", size = 1) +
+  plot_theme(base_family = "gfont", base_size = 20) + theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm")) + guides(colour = guide_legend(override.aes = list(size=5))) +
   scale_x_continuous(expand = c(0, 0)) +
   labs(title = paste("Projected trends in", loc2,"RSDS"),
        subtitle = "By model and average", x = "Year", y = "RSDS") +
-  annotate("text", -Inf, Inf, label = lm_eqn(d), parse = TRUE, size = 14, colour = "white", hjust = 0, vjust = 1)
+  annotate("text", -Inf, Inf, label = lm_eqn(d), parse = TRUE, size = 12, colour = contrast, hjust = 0, vjust = 1) +
+  annotate("text", -Inf, totpos, label = totpct, parse = TRUE, size = 14, colour = contrast, hjust = 0, vjust = 1) +
+  annotate("text", -Inf, decpos, label = decpct, parse = TRUE, size = 14, colour = contrast, hjust = 0, vjust = 1)
 
 p2 <- ggdensity(d, x = "value", add = "mean", rug = TRUE, color = "Period", fill = "Period",
-                palette = c("#00AFBB", "#E7B800"), size = 1, ggtheme = snapplot::theme_snapdark(base_family = "gfont", base_size = 20)) +
+                palette = clrs2, size = 1, ggtheme = plot_theme(base_family = "gfont", base_size = 20)) +
   theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm")) + guides(colour = guide_legend(override.aes = list(size=5))) +
   scale_x_continuous(expand = c(0, 0)) +
   labs(title = paste("Distributions of", loc2, "RSDS over time"),
@@ -86,10 +112,10 @@ d2$Model <- reorder(d$Model, d$value, FUN=median)
 idx <- match(levels(reorder(d$Model, d$value, FUN=median)), levels(d$Model))
 comps <- purrr::map(2:6, ~c(levels(d$Model)[1], levels(d$Model)[.x]))
 p3 <- ggboxplot(d2, x = "Model", y = "value",
-                color = "white", fill = "Model", palette = clrs[idx],
-                add = "jitter", shape = 21, ggtheme = snapplot::theme_snapdark(base_family = "gfont", base_size = 20)) +
-  stat_compare_means(comparisons = comps, color = "white", textsize = 20) +
-  stat_compare_means(colour = "white", size = 12) +
+                color = contrast, fill = "Model", palette = clrs[idx],
+                add = "jitter", shape = 21, ggtheme = plot_theme(base_family = "gfont", base_size = 20)) +
+  stat_compare_means(comparisons = comps, color = contrast, textsize = 20) +
+  stat_compare_means(colour = contrast, size = 12) +
   theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), legend.key.size = unit(1,"line")) +
   scale_x_discrete(expand = c(0, 0.4)) +
   labs(title = paste("Distributions of", loc2, "RSDS by model"),
@@ -100,13 +126,14 @@ dsum <- filter(d, Model != "CRU 4.0" & Year >= 2010 & Year < 2100) %>%
   mutate(Window = factor(Window, levels = unique(Window))) %>%
   group_by(Window, Model) %>% summarise(Mean = mean(value)) %>%
   mutate(Model_Window = paste(Window, Model)) %>% arrange(Window, Mean)
-p4 <- ggplot(dsum, aes(factor(Model_Window, levels = unique(Model_Window)), Mean, colour = Window)) + scale_colour_manual(values = c("#00AFBB", "#E7B800", snapplot::snapalettes()[8])) +
-  coord_flip() + theme_snapdark(base_family = "gfont", base_size = 20) +
+
+p4 <- ggplot(dsum, aes(factor(Model_Window, levels = unique(Model_Window)), Mean, colour = Window)) + scale_colour_manual(values = clrs3) +
+  coord_flip() + plot_theme(base_family = "gfont", base_size = 20) +
   theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm")) + guides(colour = guide_legend(title = "Period"), override.aes=list(alpha=1)) +
   scale_y_continuous(expand = c(0.025, 0)) +
   geom_segment(aes(y = min(Mean), xend = Model_Window, yend = Mean, colour = Window), size = 1) +
   geom_point(aes(colour = Window), shape = 15, size = 10) +
-  geom_text(aes(label = round(Mean, 1)), colour = "white", size = 10) +
+  geom_text(aes(label = round(Mean, 1)), colour = contrast, size = 10) +
   labs(title = "Projected mean RSDS by model and time period",
        subtitle = loc2, x = NULL, y = "RSDS")
 
