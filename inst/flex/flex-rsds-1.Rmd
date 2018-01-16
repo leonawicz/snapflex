@@ -1,6 +1,7 @@
 ---
 params:
   location: NA
+  annotate_plot: FALSE
   storyboard: NA
   snaptheme: NA
   gfont: NA
@@ -28,7 +29,7 @@ d <- rsds1[[loc2]]
 ```{r setup}
 ```
 
-Row
+Row {data-height=500}
 -------------------------------------
 
 ### RSDS time series by model
@@ -61,7 +62,7 @@ a <- paste0("***\n\n", a1, a2, a3)
 
 `r if(exists("a")) knitr::knit(text = a)`
 
-Row
+Row {data-height=500}
 -------------------------------------
 
 ### RSDS box plots by model with select statistical tests
@@ -93,3 +94,12 @@ a <- paste0("***\n\n", a1, a2)
 ```
 
 `r if(exists("a")) knitr::knit(text = a)`
+
+Row {data-height=50}
+-------------------------------------
+
+```{r caption, eval=!storyboard}
+caption <- pct_change_statement
+```
+
+`r if(exists("caption")) knitr::knit(text = caption)`
