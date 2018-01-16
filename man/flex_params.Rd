@@ -2,7 +2,7 @@
 % Please edit documentation in R/snapflex.R
 \name{flex_params}
 \alias{flex_params}
-\title{Required template parameters}
+\title{Template parameters}
 \usage{
 flex_params(template)
 }
@@ -13,12 +13,13 @@ flex_params(template)
 a list or \code{NULL}.
 }
 \description{
-List the required parameters for a flexdashboard template that must be passed to \code{flex}.
+List the required and optional parameters for a flexdashboard template passed to \code{flex}.
 }
 \details{
-If this function returns \code{NULL} for a given template, then no parameters are required to be passed in a named list when calling \code{flex}.
-Otherwise a length-2 list is returned. The first list element contains the vector of required parameters.
-The second element contains information regarding what constitutes valid values for the parameters if you are less familiar with the SNAPverse and SNAP climate data sets.
+This function returns a data frame with three columns. The first contains parameter names pertaining to a specific template.
+The second is a column of default values. If \code{NA}, the parameter is required to be passed by the user any time the template is rendered using \code{flex}.
+Otherwise, the parameter is optional, given that a default value is set by the template if the user ignores the parameter.
+The third is a column of hints, containing information regarding what constitutes valid values for the parameters in case you are less familiar with the SNAPverse and SNAP climate data sets.
 }
 \examples{
 flex_params("psc1")

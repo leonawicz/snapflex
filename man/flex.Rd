@@ -5,7 +5,7 @@
 \title{Generate flexdashboards for SNAP data sets}
 \usage{
 flex(template, out_dir = getwd(), file = paste0(template, ".html"),
-  template_params = NULL, load_static = FALSE)
+  template_params = NULL, load_static = FALSE, ...)
 }
 \arguments{
 \item{template}{character, the ID of the flexdashboard template. See \code{\link{flex_templates}} for available IDs and descriptions.}
@@ -14,9 +14,11 @@ flex(template, out_dir = getwd(), file = paste0(template, ".html"),
 
 \item{file}{character, output file name.}
 
-\item{template_params}{named list, additional parameters passed to the template if required. See \code{\link{flex_params}} for more information.}
+\item{template_params}{named list, additional parameters passed to a specific template if required. See \code{\link{flex_params}} for more information.}
 
 \item{load_static}{logical, load static files automatically. See details.}
+
+\item{...}{additional arguments passed to \code{flex_dashboard}. See details.}
 }
 \description{
 Generate local flexdashboards for SNAP data sets from package templates.
@@ -36,9 +38,22 @@ A template may still offer the ability to switch between different graphs and ta
 However, all data is embedded in the document. This makes it useful as a standalone file requiring no Shiny server backend,
 but it also means that more complex static templates result in larger output file sizes and they cannot achieve anywhere near the
 complexity of a flexdashboard that uses Shiny.
+
+Additional arguments passed to \code{flex_dashboard} typically include \code{theme}, \code{css} and \code{storyboard}.
+Unless a given template supports it specifically, using \code{storyboard = TRUE} will not add any meaningful content.
+Choice of \code{theme} is limited to those available in the \code{flexdashboard} package.
+Additional CSS can be attached with \code{css}. Styling contained in a CSS file may be attached remotely via CDN (Content Delivery Network).
 }
 \examples{
-\dontrun{flex("psc1", template_params = list(location = "Fairbanks"))}
+\dontrun{
+flex_params("rsds1")
+pars <- list(location = "Vancouver")
+flex("rsds1", template_params = pars)
+flex("rsds1", template_params = pars, theme = "sandstone", storyboard = TRUE)
+pars$gfont <- "Source Sans Pro"
+pars$snaptheme <- "theme_snap"
+flex("rsds1", template_params = pars)
+}
 }
 \seealso{
 flex_templates flex_params
