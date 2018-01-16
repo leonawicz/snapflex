@@ -31,63 +31,107 @@ NULL
 #' but it also means that more complex static templates result in larger output file sizes and they cannot achieve anywhere near the
 #' complexity of a flexdashboard that uses Shiny.
 #'
+#' Additional arguments passed to \code{flex_dashboard} typically include \code{theme}, \code{css} and \code{storyboard}.
+#' Unless a given template supports it specifically, using \code{storyboard = TRUE} will not add any meaningful content.
+#' Choice of \code{theme} is limited to those available in the \code{flexdashboard} package.
+#' Additional CSS can be attached with \code{css}. Styling contained in a CSS file may be attached remotely via CDN (Content Delivery Network).
+#'
 #' @param template character, the ID of the flexdashboard template. See \code{\link{flex_templates}} for available IDs and descriptions.
 #' @param out_dir character, output directory for standalone html document when \code{template} refers to a static (non-Shiny) flexdashboard.
 #' @param file character, output file name.
-#' @param template_params named list, additional parameters passed to the template if required. See \code{\link{flex_params}} for more information.
+#' @param template_params named list, additional parameters passed to a specific template if required. See \code{\link{flex_params}} for more information.
 #' @param load_static logical, load static files automatically. See details.
+#' @param ... additional arguments passed to \code{flex_dashboard}. See details.
 #'
 #' @export
 #'
 #' @seealso flex_templates flex_params
 #' @examples
-#' \dontrun{flex("psc1", template_params = list(location = "Fairbanks"))}
+#' \dontrun{
+#' flex_params("rsds1")
+#' pars <- list(location = "Vancouver")
+#' flex("rsds1", template_params = pars)
+#' flex("rsds1", template_params = pars, theme = "sandstone", storyboard = TRUE)
+#' pars$gfont <- "Source Sans Pro"
+#' pars$snaptheme <- "theme_snap"
+#' flex("rsds1", template_params = pars)
+#' }
 flex <- function(template, out_dir = getwd(), file = paste0(template, ".html"),
-                 template_params = NULL, load_static = FALSE){
+                 template_params = NULL, load_static = FALSE, ...){
+  .check_template_id(template)
   path <- .flex_path(template)
   use_shiny <- dplyr::filter(flex_templates(), .data[["id"]] == template)$shiny
   params_required <- dplyr::filter(flex_templates(), .data[["id"]] == template)$params
-  if(params_required) required_params <- strsplit(flex_params(template)$parameters, ", ")[[1]]
+  if(params_required){
+    pars <- flex_params(template)
+    required_params <- pars$parameter[is.na(pars$value)]
+  }
+  dots <- list(...)
+
+  file_lines <- readLines(path) # used for orientation, storyboard, css
+  idx <- which(substr(file_lines, 1, 8) == "    css:")
+  template_css <- gsub("\"", "", substring(file_lines[idx], 10))
+  if(is.null(dots$orientation)){
+    idx <- which(substr(file_lines, 1, 16) == "    orientation:")
+    dots$orientation <- tail(strsplit(file_lines[idx], " ")[[1]], 1)
+  }
+  storyboard <- ifelse(is.null(dots$storyboard), FALSE, dots$storyboard)
+  if(is.null(template_params)){
+    template_params <- list(storyboard = storyboard)
+  } else {
+    template_params$storyboard <- storyboard
+  }
+  if(!is.null(dots$css) && any(substr(dots$css, 1, 4) == "http")){
+    idx <- which(substr(dots$css, 1, 4) == "http")
+    for(i in idx){
+      tmp <- file.path(tempdir(), paste0("remote_styles", i, ".css"))
+      download.file(dots$css[i], tmp, quiet = TRUE)
+      dots$css[idx] <- tmp
+    }
+  }
+  if(storyboard){
+    if(template_css != "null") template_css <- file.path(dirname(path), template_css)
+    tmp <- file.path(tempdir(), basename(path))
+    rfile <- gsub(".Rmd", ".R", basename(path))
+    file.copy(path, tmp, overwrite = TRUE)
+    idx1 <- which(substr(file_lines, 1, 18) == "knitr::read_chunk(")
+    idx2 <- which(substr(file_lines, 1, 3) == "Row" | substr(file_lines, 1, 6) == "Column")
+    if(length(idx1))
+      file_lines[idx1] <- paste0("knitr::read_chunk(\"",
+                                 file.path(system.file("flex", package = "snapflex"), rfile), "\")")
+    if(length(idx2)) file_lines[c(idx2, idx2 + 1)] <- ""
+    writeLines(file_lines, tmp)
+    path <- tmp
+  }
+  if(template_css != "null") dots$css <- c(template_css, dots$css)
+  default <- .template_defaults(template)
+  for(i in names(default)) if(is.null(template_params[[i]])) template_params[[i]] <- default[[i]]
+
   cat("Genrating flexdashboard...\n")
   if(params_required){
     missing_params <- "Additional parameters required. See `flex_params`."
     if(!is.list(template_params) || any(!required_params %in% names(template_params)))
       stop(missing_params)
-    storyboard <- "storyboard" %in% required_params && template_params$storyboard
-    if(storyboard){
-      tmp <- file.path(tempdir(), basename(path))
-      rfile <- gsub(".Rmd", ".R", basename(path))
-      file.copy(path, tmp, overwrite = TRUE)
-      x <- readLines(path)
-      idx <- which(substr(x, 5, 17) == "orientation: ")
-      idx2 <- which(substr(x, 1, 18) == "knitr::read_chunk(")
-      idx3 <- which(substr(x, 1, 3) == "Row" | substr(x, 1, 6) == "Column")
-      x[idx] <- "    storyboard: true"
-      if(length(idx2))
-        x[idx2] <- paste0("knitr::read_chunk(\"", file.path(system.file("flex", package = "snapflex"), rfile), "\")")
-      if(length(idx3))
-        x[c(idx3, idx3 + 1)] <- ""
-      writeLines(x, tmp)
-      path <- tmp
-    }
     suppressWarnings(suppressMessages(
       if(use_shiny){
         rmarkdown::run(path, render_args = template_params)
       } else {
-        rmarkdown::render(path, output_file = file, output_dir = out_dir,
+        rmarkdown::render(path, do.call(flexdashboard::flex_dashboard, dots),
+                          output_file = file, output_dir = out_dir,
                           params = template_params, quiet = TRUE)
       }
     ))
-    if(storyboard) unlink(tmp)
   } else {
     suppressWarnings(suppressMessages(
       if(use_shiny){
         rmarkdown::run(path)
       } else {
-        rmarkdown::render(path, output_file = file, output_dir = out_dir, quiet = TRUE)
+        rmarkdown::render(path, do.call(flexdashboard::flex_dashboard, dots),
+                          output_file = file, output_dir = out_dir, quiet = TRUE)
       }
     ))
   }
+  if(storyboard) unlink(tmp)
   cat("Dashboard complete.\n")
   if(!use_shiny && load_static) utils::browseURL(paste0("file://", file.path(out_dir, file)))
   invisible()
@@ -116,6 +160,12 @@ flex <- function(template, out_dir = getwd(), file = paste0(template, ".html"),
 #'   \item whether the template requires any additional parameters specified by the user.
 #' }
 #'
+#' Regarding required template-specific parameters, note that all templates in \code{snapflex} accept some parameters that are optional
+#' rather than required because the templates have set defaults for these if ignored. For example, all templates accept \code{gfont} , \code{regular}, \code{bold} and \code{snaptheme}.
+#' Since optional parameters are always available and are safely ignored, entries in the final column of the data frame are \code{TRUE} only
+#' if a template has required parameters where the user must always specify the value when rendering a template.
+#' Use \code{\link{flex_params}} to view a table of information about all parameters available for a given template.
+#'
 #' @return a data frame.
 #' @export
 #'
@@ -135,13 +185,14 @@ flex_templates <- function(){
 .flex_shiny <- c(FALSE, FALSE)
 .flex_params <- c(TRUE, TRUE)
 
-#' Required template parameters
+#' Template parameters
 #'
-#' List the required parameters for a flexdashboard template that must be passed to \code{flex}.
+#' List the required and optional parameters for a flexdashboard template passed to \code{flex}.
 #'
-#' If this function returns \code{NULL} for a given template, then no parameters are required to be passed in a named list when calling \code{flex}.
-#' Otherwise a length-2 list is returned. The first list element contains the vector of required parameters.
-#' The second element contains information regarding what constitutes valid values for the parameters if you are less familiar with the SNAPverse and SNAP climate data sets.
+#' This function returns a data frame with three columns. The first contains parameter names pertaining to a specific template.
+#' The second is a column of default values. If \code{NA}, the parameter is required to be passed by the user any time the template is rendered using \code{flex}.
+#' Otherwise, the parameter is optional, given that a default value is set by the template if the user ignores the parameter.
+#' The third is a column of hints, containing information regarding what constitutes valid values for the parameters in case you are less familiar with the SNAPverse and SNAP climate data sets.
 #'
 #' @param template character, the flexdashboard template. See \code{\link{flex_templates}}.
 #'
@@ -152,10 +203,35 @@ flex_templates <- function(){
 #' @examples
 #' flex_params("psc1")
 flex_params <- function(template){
-  switch(template,
-         "psc1" = list(parameters = "location", hint = "See snaplocs::locs for valid point location names."),
-         "rsds1" = list(parameters = "location, storyboard", hint = c(
-           "Nine valid locations: 'Anaktuvuk Pass', 'Anchorage', 'Cantwell', 'Chicken', 'Churchill', 'Fairbanks', 'Juneau', 'Saskatoon', 'Vancouver'.", # nolint
-           "'storyboard': logical."))
-         )
+  .check_template_id(template)
+  default <- .template_defaults(template)
+  pars <- names(default)
+  hint <- c(
+    gfont = "A valid Google Fonts name. See https://fonts.google.com/ and `sysfonts::font_families_google`.",
+    regular = "Regular Google font weight.",
+    bold = "Bold Google font weight.",
+    snaptheme = "A ggplot theme from the snapplot package, e.g., 'theme_snap' or 'theme_snapdark'."
+  )[pars]
+
+  x <- switch(template,
+         "psc1" = list(pars = "location", hint = "See snaplocs::locs for valid point location names."),
+         "rsds1" = list(pars = "location",
+                        hint = "Nine valid locations: 'Anaktuvuk Pass', 'Anchorage', 'Cantwell', 'Chicken', 'Churchill', 'Fairbanks', 'Juneau', 'Saskatoon', 'Vancouver'.") # nolint
+  )
+  tibble::data_frame(parameter = c(x$pars, pars),
+                     value = c(as.character(rep(NA, length(x[[1]]))), default),
+                     hint = c(x$hint, hint))
+}
+
+.template_defaults <- function(id){
+  x <- switch(id,
+         "psc1" = c("Play", 400, 400, "theme_snap"),
+         "rsds1" = c("Jura", 400, 400, "theme_snapdark")
+  )
+  names(x) <- c("gfont", "regular", "bold", "snaptheme")
+  x
+}
+
+.check_template_id <- function(x){
+  if(!x %in% flex_templates()$id) stop("Invalid `template` ID. See `flex_templates`.")
 }
