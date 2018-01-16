@@ -26,6 +26,7 @@ Imports:
     dplyr,
     tibble,
     leaflet,
+    ggpubr,
     showtext,
     snaplocs,
     snapclim,
