@@ -210,7 +210,8 @@ flex_params <- function(template){
     gfont = "A valid Google Fonts name. See https://fonts.google.com/ and `sysfonts::font_families_google`.",
     regular = "Regular Google font weight.",
     bold = "Bold Google font weight.",
-    snaptheme = "A ggplot theme from the snapplot package, e.g., 'theme_snap' or 'theme_snapdark'."
+    snaptheme = "A ggplot theme from the snapplot package, e.g., 'theme_snap' or 'theme_snapdark'.",
+    annotate_plot = "Logical: Include optional plot annotations."
   )[pars]
 
   x <- switch(template,
@@ -224,11 +225,15 @@ flex_params <- function(template){
 }
 
 .template_defaults <- function(id){
+  fixed <- c("gfont", "regular", "bold", "snaptheme")
   x <- switch(id,
-         "psc1" = c("Play", 400, 400, "theme_snap"),
-         "rsds1" = c("Jura", 400, 400, "theme_snapdark")
+              "psc1" = c("Play", 400, 400, "theme_snap"),
+              "rsds1" = c("Jura", 400, 400, "theme_snapdark", FALSE)
   )
-  names(x) <- c("gfont", "regular", "bold", "snaptheme")
+  names(x) <- switch(id,
+                     "psc1" = fixed,
+                     "rsds1" = c(fixed, "annotate_plot")
+  )
   x
 }
 
