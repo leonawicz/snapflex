@@ -78,24 +78,24 @@ Remember that `snapflex` is part of the [SNAPverse](https://leonawicz.github.io/
 
 Recreating the above dashboard using different values for optional parameters can be done like in the following example.
 
-```{r flex eval=FALSE}
+```{r optional_params, eval=FALSE}
 pars <- list(location = "Anchorage", gfont = "Source Sans Pro", regular = 300, bold = 400, snaptheme = "theme_snapdark")
 flex(template = "psc1", template_params = pars)
 ```
 
-## flex_dashboard arguments
+### flex_dashboard arguments
 
 The `...` argument can be used to pass a list of arguments directly to `flexdashboard::flex_dashboard` for additional control over the structure and appearance of template output.
 Common arguments include `theme`, `css` and `storyboard`. See the [flexdashboard](http://rmarkdown.rstudio.com/flexdashboard/) package for more information.
 
-## Storyboards
+### Storyboards
 
 Any template can be alternatively rendered as a storyboard-style flexdashboard. However, not all templates are intended for use this way, so mileage may vary.
 Some templates are dual-designed to support both formats. For example, the `rsds1` template provides four plots in a standard layout which little additional information.
 This is useful if you already know what you are looking at. If `storyboard = TRUE`, the template will be rendered to a storyboard.
 This provides additional textual summaries for each plot that are not part of the standard, simplified layout. It also allows for larger display of individual plots.
 
-```{r flex eval=FALSE}
+```{r storyboards, eval=FALSE}
 pars <- list(location = "Vancouver")
 flex(template = "rsds1", template_params = pars)
 flex(template = "rsds1", template_params = , storyboard = TRUE)
