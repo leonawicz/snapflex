@@ -73,7 +73,7 @@ flex <- function(template, out_dir = getwd(), file = paste0(template, ".html"),
   template_css <- gsub("\"", "", substring(file_lines[idx], 10))
   if(is.null(dots$orientation)){
     idx <- which(substr(file_lines, 1, 16) == "    orientation:")
-    dots$orientation <- tail(strsplit(file_lines[idx], " ")[[1]], 1)
+    dots$orientation <- utils::tail(strsplit(file_lines[idx], " ")[[1]], 1)
   }
   storyboard <- ifelse(is.null(dots$storyboard), FALSE, dots$storyboard)
   if(is.null(template_params)){
@@ -85,7 +85,7 @@ flex <- function(template, out_dir = getwd(), file = paste0(template, ".html"),
     idx <- which(substr(dots$css, 1, 4) == "http")
     for(i in idx){
       tmp <- file.path(tempdir(), paste0("remote_styles", i, ".css"))
-      download.file(dots$css[i], tmp, quiet = TRUE)
+      utils::download.file(dots$css[i], tmp, quiet = TRUE)
       dots$css[idx] <- tmp
     }
   }
