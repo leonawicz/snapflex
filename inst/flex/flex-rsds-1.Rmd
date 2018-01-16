@@ -40,7 +40,7 @@ p1
 
 ```{r annotations-1, eval=storyboard}
 a1 <- "Figure 1 shows a historical baseline in gray and projected trends for each climate model using the other colors.\n\n"
-a2 <- paste0("The colored trend lines and scatter plot of projected model outputs are faded to highlight the mean trend over projected period. ", pct_change_statement, "\n\n")
+a2 <- paste0("The colored trend lines and scatter plot of projected model outputs are faded to highlight the mean trend over the projected period. ", pct_change_statement, "\n\n")
 a3 <- paste("The regression equation for the", contrast, "trend line is shown. This helps discern any trend in solar irradiance with time, but keep in mind that a simple linear regression model of mean annual solar irradiance on time is not intended to explain much of the variation in solar irradiance across models, hence the low R-squared.\n\n")
 a <- paste0("***\n\n", a1, a2, a3)
 ```
