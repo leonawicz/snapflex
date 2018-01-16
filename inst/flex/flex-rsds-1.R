@@ -92,7 +92,7 @@ decpos <- max(d$value) - 0.15 * yrange
 prime_lab <- expression(Solar~Irradiance~(W/m^2))
 prime_lab2 <- "solar irradiance"
 pct_change_statement <- paste0("The estimated projected percent change in solar irradiance over the period 2006 - 2100 using the five climate models is ", total_pct_change,
-                               "%. This is approximately ", change_per_decade, "% change per decade during the period.")
+                               "%. This is approximately ", change_per_decade, "% change per decade during the period. These mean estimates are based on the linear regression in figure 1.")
 
 p1 <- ggplot(d, aes(Year, value)) + geom_smooth(aes(colour = Model), se = FALSE, linetype = 2, size = 0.5) +
   geom_point(aes(colour = Model), alpha = 0.2) +

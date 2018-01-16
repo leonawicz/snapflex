@@ -11,7 +11,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: rows
     css: null
-title: "`r paste(paste(params$location, snaplocs::get_state(params$location), sep = ', '), 'RSDS trends')`"
+title: "`r paste(paste(params$location, snaplocs::get_state(params$location), sep = ', '), 'solar irradiance trends')`"
 ---
 
 ```{r knitr_setup, include=FALSE}
@@ -32,7 +32,7 @@ d <- rsds1[[loc2]]
 Row {data-height=500}
 -------------------------------------
 
-### RSDS time series by model
+### Solar irradiance time series by model
 
 ```{r p1}
 p1
@@ -40,22 +40,22 @@ p1
 
 ```{r annotations-1, eval=storyboard}
 a1 <- "Figure 1 shows a historical baseline in gray and projected trends for each climate model using the other colors.\n\n"
-a2 <- "The colored trend lines and scatter plot of projected model outputs are faded to highlight the mean trend over the climate model time period (2006 - 2100). Average total change in RSDS as well as average change per decade  over this period is shown on the plot.\n\n"
-a3 <- paste("The regression equation for the", contrast, "trend line is also included. This helps show any trend in RSDS with time, but keep in mind that a simple linear regression model of mean annual RSDS on time is not intended to explain much of the variation in RSDS across models, hence the low R-squared.\n\n")
+a2 <- paste0("The colored trend lines and scatter plot of projected model outputs are faded to highlight the mean trend over projected period. ", pct_change_statement, "\n\n")
+a3 <- paste("The regression equation for the", contrast, "trend line is shown. This helps discern any trend in solar irradiance with time, but keep in mind that a simple linear regression model of mean annual solar irradiance on time is not intended to explain much of the variation in solar irradiance across models, hence the low R-squared.\n\n")
 a <- paste0("***\n\n", a1, a2, a3)
 ```
 
 `r if(exists("a")) knitr::knit(text = a)`
 
-### Aggregate historical and projected period RSDS densities
+### Aggregate historical and projected period solar irradiance densities
 
 ```{r p2}
 p2
 ```
 
 ```{r annotations-2, eval=storyboard}
-a1 <- "Figure 2 shows historical and projected distributions of annual RSDS over time.\n\n"
-a2 <- "The historical distribution pertains to RSDS observations based on downscaled CRU 4.0 data. The spread in projected outputs comes from pooling the five climate models.\n\n"
+a1 <- "Figure 2 shows historical and projected distributions of annual solar irradiance over time.\n\n"
+a2 <- "The historical distribution pertains to solar irradiance observations based on downscaled CRU 4.0 data. The spread in projected outputs comes from pooling the five climate models.\n\n"
 a3 <- "Note that the latter distribution sample contains more observations than the former, using five models as well as a greater number of years.\n\n"
 a <- paste0("***\n\n", a1, a2, a3)
 ```
@@ -65,31 +65,31 @@ a <- paste0("***\n\n", a1, a2, a3)
 Row {data-height=500}
 -------------------------------------
 
-### RSDS box plots by model with select statistical tests
+### Solar irradiance box plots by model with select statistical tests
 
 ```{r p3}
 p3
 ```
 
 ```{r annotations-3, eval=storyboard}
-a1 <- "Another view of RSDS distributions is shown in figure 3, one for each model.\n\n"
+a1 <- "Another view of solar irradiance distributions is shown in figure 3, one for each model.\n\n"
 a2 <- paste0("P-values for select statisticial tests for differences in group means of each climate model with respect to CRU 4.0 as the reference group are shown on the plot.\n", 
              "The global Kruskal-Wallis p-value is also shown, though for these data sets its significance is not surprising.\n\n")
-a3 <- "Climate model projected period distirbution means for RSDS may differ significantly from the CRU 4.0 baseline in either direction and variability is greater across a set of climate models, as was seen in figure 2.\n\n"
+a3 <- "Climate model projected period distirbution means for solar irradiance may differ significantly from the CRU 4.0 baseline in either direction and variability is greater across a set of climate models, as was seen in figure 2.\n\n"
 a <- paste0("***\n\n", a1, a2, a3)
 ```
 
 `r if(exists("a")) knitr::knit(text = a)`
 
-### Projected mean RSDS by model for select 30-year windows
+### Projected mean solar irradiance by model for select 30-year windows
 
 ```{r p4}
 p4
 ```
 
 ```{r annotations-4, eval=storyboard}
-a1 <- "Figure 4 shows mean period RSDS for each climate model during each of three future 30-year windows.\n\n"
-a2 <- "Each period is broken out with a different color. Within periods, models are ranked by mean RSDS.\n\n"
+a1 <- "Figure 4 shows mean period solar irradiance for each climate model during each of three future 30-year windows.\n\n"
+a2 <- "Each period is broken out with a different color. Within periods, models are ranked by mean solar irradiance.\n\n"
 a <- paste0("***\n\n", a1, a2)
 ```
 
