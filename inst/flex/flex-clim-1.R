@@ -45,7 +45,7 @@ subtitle <- "From 1960 - 1989 seasonal climatologies"
 
 ndec <- (mean(c(2070, 2099)) - mean(c(1960, 1989))) / 10
 total_change <- summarise(x2, Mean = mean(Mean))$Mean
-pct_per_dec <- round(100 * (total_change[1]^(1 / ndec)), 1)
+pct_per_dec <- round(100 * (abs(total_change[1])^(1 / ndec) - sign(total_change[1])), 1)
 dif_per_dec <- round(total_change[2] / ndec, 1)
 
 # nolint start

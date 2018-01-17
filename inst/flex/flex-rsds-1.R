@@ -82,9 +82,9 @@ lm_eqn <- function(df){
 n_proj <- length(unique(dsub$Year))
 rsds1 <- bhats[1] + bhats[2] * min(dsub$Year)
 rsds2 <- bhats[1] + bhats[2] * max(dsub$Year)
-totchg <- rsds2 / rsds1 - 1
-total_pct_change <- signif(100 * (totchg), 2)
-change_per_decade <- round(totchg^(10 / n_proj), 1)
+ratio <- rsds2 / rsds1
+total_pct_change <- signif(100 * (ratio - 1), 2)
+change_per_decade <- round(100 * (abs(ratio)^(10 / n_proj) - sign(ratio)), 1)
 totpct <- paste0("~~Total~projected~change:~", total_pct_change, '*symbol("\045")')
 decpct <- paste0("~~", change_per_decade, '*symbol("\045")/decade')
 yrange <- diff(range(d$value))
@@ -99,7 +99,7 @@ p1 <- ggplot(d, aes(Year, value)) + geom_smooth(aes(colour = Model), se = FALSE,
   geom_point(aes(colour = Model), alpha = 0.2) +
   scale_colour_manual(values = clrs) +
   geom_smooth(data = dsub, colour = contrast, method = "lm", size = 1) +
-  plot_theme(base_family = "gfont", base_size = 20) + theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), axis.text = element_text(size = 40), legend.text = element_text(size = 40)) + guides(colour = guide_legend(override.aes = list(size=5))) +
+  plot_theme(base_family = "gfont", base_size = 20) + theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), axis.text = element_text(size = 40), legend.text = element_text(size = 40)) + guides(colour = guide_legend(override.aes = list(size=5, alpha = 0.5))) +
   scale_x_continuous(expand = c(0, 0)) +
   labs(title = paste("Projected trends in", loc2, prime_lab2),
        subtitle = "By model and average", x = "Year", y = prime_lab) +
