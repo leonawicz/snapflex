@@ -17,14 +17,14 @@ test_that("params are as expected", {
 
   x <- flex_params("rsds1")
   expect_is(x, "tbl_df")
-  expect_equal(x$parameter, c("location", "gfont", "regular", "bold", "snaptheme", "annotate_plot"))
+  expect_equal(x$parameter, c("location", "gfont", "regular", "bold", "snaptheme", "simplify"))
   expect_equal(x$value, c(NA, "Jura", 400, 400, "theme_snapdark", FALSE))
   h <- c("Nine valid locations: 'Anaktuvuk Pass', 'Anchorage', 'Cantwell', 'Chicken', 'Churchill', 'Fairbanks', 'Juneau', 'Saskatoon', 'Vancouver'.", # nolint
          "A valid Google Fonts name. See https://fonts.google.com/ and `sysfonts::font_families_google`.",
          "Regular Google font weight.",
          "Bold Google font weight.",
          "A ggplot theme from the snapplot package, e.g., 'theme_snap' or 'theme_snapdark'.",
-         "Logical: Include optional plot annotations.")
+         "Logical: Simplify select dashboard content.")
   expect_equal(x$hint, h)
 })
 

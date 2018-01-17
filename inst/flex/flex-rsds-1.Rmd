@@ -1,7 +1,7 @@
 ---
 params:
   location: NA
-  annotate_plot: FALSE
+  simplify: FALSE
   storyboard: NA
   snaptheme: NA
   gfont: NA
@@ -21,6 +21,7 @@ knitr::opts_chunk$set(cache=FALSE, tidy=TRUE, message=FALSE, warning=FALSE, fig.
 knitr::read_chunk("flex-rsds-1.R")
 storyboard <- params$storyboard
 rsds1 <- readRDS(url("https://s3.amazonaws.com/leonawicz/apps/snapflex/rsds1/rsds1.rds"))
+simplify <- params$simplify
 loc <- params$location
 loc2 <- paste(loc, snaplocs::get_state(loc), sep = ", ")
 d <- rsds1[[loc2]]
@@ -40,7 +41,11 @@ p1
 
 ```{r annotations-1, eval=storyboard}
 a1 <- "Figure 1 shows a historical baseline in gray and projected trends for each climate model using the other colors.\n\n"
-a2 <- paste0("The colored trend lines and scatter plot of projected model outputs are faded to highlight the mean trend over the projected period. ", pct_change_statement, "\n\n")
+if(simplify){
+  a2 <- paste0("The colored trend lines and scatter plot of projected model outputs are faded to highlight the mean trend over the projected period. ", pct_change_statement, "\n\n")
+} else {
+  a2 <- paste0(pct_change_statement, "\n\n")
+}
 a3 <- paste("The regression equation for the", contrast, "trend line is shown. This helps discern any trend in solar irradiance with time, but keep in mind that a simple linear regression model of mean annual solar irradiance on time is not intended to explain much of the variation in solar irradiance across models, hence the low R-squared.\n\n")
 a <- paste0("***\n\n", a1, a2, a3)
 ```

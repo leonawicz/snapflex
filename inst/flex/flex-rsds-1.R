@@ -56,7 +56,7 @@ stat_compare_means <- function(mapping = NULL, data = NULL, method = NULL, paire
   }
 }
 
-d$value <- d$value / 0.0864 # MJ*day/m^2 to W/m^2
+d$value <- (24 * d$value) / (1000 * 0.0864) # MJ/m^2/day to kWh/m^2/day
 
 clrs <- c("gray50", "#00AFBB", "#E7B800", snapplot::snapalettes()[c(4, 7, 8)])
 clrs2 <- clrs[2:3]
@@ -90,22 +90,21 @@ decpct <- paste0("~~", change_per_decade, '*symbol("\045")/decade')
 yrange <- diff(range(d$value))
 totpos <- max(d$value) - 0.075 * yrange
 decpos <- max(d$value) - 0.15 * yrange
-prime_lab <- expression(Solar~Irradiance~(W/m^2))
+prime_lab <- expression(Solar~Irradiance~(kWh/m^2/day))
 prime_lab2 <- "solar irradiance"
 pct_change_statement <- paste0("The estimated projected percent change in solar irradiance over the period 2006 - 2100 using the five climate models is ", total_pct_change,
                                "%. This is approximately ", change_per_decade, "% change per decade during the period. These mean estimates are based on the linear regression in figure 1.")
+p1size1 <- ifelse(simplify, 1, 0.5)
 
-p1 <- ggplot(d, aes(Year, value)) + geom_smooth(aes(colour = Model), se = FALSE, linetype = 2, size = 0.5) +
-  geom_point(aes(colour = Model), alpha = 0.2) +
-  scale_colour_manual(values = clrs) +
+p1 <- ggplot(d, aes(Year, value)) + geom_smooth(data = filter(d, !(Model == "CRU 4.0" & Year > 2005)), aes(colour = Model), se = FALSE, linetype = "longdash", size = p1size1)
+if(!simplify) p1 <- p1 + geom_point(aes(colour = Model), alpha = 0.2)
+p1 <- p1 + scale_colour_manual(values = clrs) +
   geom_smooth(data = dsub, colour = contrast, method = "lm", size = 1) +
   plot_theme(base_family = "gfont", base_size = 20) + theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), axis.text = element_text(size = 40), legend.text = element_text(size = 40)) + guides(colour = guide_legend(override.aes = list(size=5, alpha = 0.5))) +
   scale_x_continuous(expand = c(0, 0)) +
-  labs(title = paste("Projected trends in", loc2, prime_lab2),
+  labs(title = paste("Projected trend in", prime_lab2, "in", loc2),
        subtitle = "By model and average", x = "Year", y = prime_lab) +
-  annotate("text", -Inf, Inf, label = lm_eqn(d), parse = TRUE, size = 12, colour = contrast, hjust = 0, vjust = 1)
-
-if(params$annotate_plot) p1 <- p1 +
+if(!simplify) p1 <- p1 + annotate("text", -Inf, Inf, label = lm_eqn(d), parse = TRUE, size = 12, colour = contrast, hjust = 0, vjust = 1) +
   annotate("text", -Inf, totpos, label = totpct, parse = TRUE, size = 14, colour = contrast, hjust = 0, vjust = 1) +
   annotate("text", -Inf, decpos, label = decpct, parse = TRUE, size = 14, colour = contrast, hjust = 0, vjust = 1)
 
@@ -113,7 +112,7 @@ p2 <- ggdensity(d, x = "value", add = "mean", rug = TRUE, color = "Period", fill
                 palette = clrs2, size = 1, ggtheme = plot_theme(base_family = "gfont", base_size = 20)) +
   theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), axis.text = element_text(size = 40), legend.text = element_text(size = 40)) + guides(colour = guide_legend(override.aes = list(size=5))) +
   scale_x_continuous(expand = c(0, 0)) +
-  labs(title = paste("Distributions of", loc2, paste(prime_lab2, "over time")),
+  labs(title = paste("Distributions of", prime_lab2, "in", loc2, "over time"),
        subtitle = "1950 - 2013 CRU 4.0 and 2006 - 2100 GCM outputs", x = prime_lab, y = "Density")
 
 d2 <- d
@@ -127,7 +126,7 @@ p3 <- ggboxplot(d2, x = "Model", y = "value",
   stat_compare_means(colour = contrast, size = 12) +
   theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), legend.key.size = unit(1,"line"), axis.text = element_text(size = 40), legend.text = element_text(size = 40), legend.position = "none") +
   scale_x_discrete(expand = c(0, 0.4)) +
-  labs(title = paste("Distributions of", loc2, prime_lab2, "by model"),
+  labs(title = paste("Distributions of", prime_lab2, "in", loc2, "by model"),
        subtitle = "1950 - 2013 CRU 4.0 and 2006 - 2100 GCM outputs. Global and select pairwise tests for difference in means.", x = "Model", y = prime_lab)
 
 dsum <- filter(d, Model != "CRU 4.0" & Year >= 2010 & Year < 2100) %>%

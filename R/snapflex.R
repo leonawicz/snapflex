@@ -211,7 +211,7 @@ flex_params <- function(template){
     regular = "Regular Google font weight.",
     bold = "Bold Google font weight.",
     snaptheme = "A ggplot theme from the snapplot package, e.g., 'theme_snap' or 'theme_snapdark'.",
-    annotate_plot = "Logical: Include optional plot annotations."
+    simplify = "Logical: Simplify select dashboard content."
   )[pars]
 
   x <- switch(template,
@@ -232,7 +232,7 @@ flex_params <- function(template){
   )
   names(x) <- switch(id,
                      "psc1" = fixed,
-                     "rsds1" = c(fixed, "annotate_plot")
+                     "rsds1" = c(fixed, "simplify")
   )
   x
 }
