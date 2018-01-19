@@ -96,8 +96,8 @@ pct_change_statement <- paste0("The estimated projected percent change in solar 
                                "%. This is approximately ", change_per_decade, "% change per decade during the period. These mean estimates are based on the linear regression in figure 1.")
 p1size1 <- ifelse(simplify, 1, 0.5)
 
-p1 <- ggplot(d, aes(Year, value)) + geom_smooth(data = filter(d, !(Model == "CRU 4.0" & Year > 2005)), aes(colour = Model), se = FALSE, linetype = "longdash", size = p1size1)
-if(!simplify) p1 <- p1 + geom_point(aes(colour = Model), alpha = 0.2)
+p1 <- ggplot(d, aes(Year, value)) + geom_smooth(data = filter(d, !(Model == "CRU 4.0" & Year > 2005)), aes(colour = Model), se = FALSE, linetype = "longdash", size = p1size1) +
+  geom_point(aes(colour = Model), alpha = 0.2)
 p1 <- p1 + scale_colour_manual(values = clrs) +
   geom_smooth(data = dsub, colour = contrast, method = "lm", size = 1) +
   plot_theme(base_family = "gfont", base_size = 20) + theme(text = element_text(size=40), plot.margin = unit(c(5, 10, 5, 5), "mm"), axis.text = element_text(size = 40), legend.text = element_text(size = 40)) + guides(colour = guide_legend(override.aes = list(size=5, alpha = 0.5))) +
