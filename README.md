@@ -5,6 +5,11 @@ snapflex
 
 [![Travis-CI Build Status](https://travis-ci.org/leonawicz/snapflex.svg?branch=master)](https://travis-ci.org/leonawicz/snapflex) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/leonawicz/snapflex?branch=master&svg=true)](https://ci.appveyor.com/project/leonawicz/snapflex) [![Coverage Status](https://img.shields.io/codecov/c/github/leonawicz/snapflex/master.svg)](https://codecov.io/github/leonawicz/snapflex?branch=master)
 
+SNAPverse R package ecosystem development frozen.
+-------------------------------------------------
+
+*Development of the SNAPverse R package ecosystem has been frozen indefinitely. This project was never directly funded. I began it out of personal interest, but no longer work for SNAP. It will remain archived here for historical reference.*
+
 `snapflex` provides functions and templates for generating local flexdashboards showcasing and summarizing SNAP data sets as well as functions for accessing existing popular SNAP flexdashboards hosted online. `snapflex` is a member package in the apps and docs sector of the [SNAPverse](https://leonawicz.github.io/snapverse/) collection of R packages.
 
 Installation
